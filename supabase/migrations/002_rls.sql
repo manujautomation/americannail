@@ -100,7 +100,7 @@ create policy "rewards_own_read"    on reward_points for select using (customer_
 create policy "rewards_staff_write" on reward_points for all    using (is_staff());
 
 create policy "reward_history_own"  on reward_history for select using (customer_id = auth.uid() or is_staff());
-create policy "reward_history_staff" on reward_history for insert using (is_staff());
+create policy "reward_history_staff" on reward_history for insert with check (is_staff());
 
 -- ─── MEMBERSHIPS ─────────────────────────────
 create policy "memberships_public_read" on memberships for select using (is_active = true);

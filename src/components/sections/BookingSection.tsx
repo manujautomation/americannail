@@ -32,7 +32,9 @@ export default function BookingSection() {
     email: "",
     notes: "",
   });
-  const [ref] = useState(() => `ANS-${Date.now().toString(36).toUpperCase().slice(-6)}`);
+  const [ref, setRef] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const steps = [
     t("steps.service"),
