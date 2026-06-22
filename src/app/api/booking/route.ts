@@ -34,8 +34,8 @@ export async function POST(req: NextRequest) {
     const data = parsed.data;
     const supabase = await createAdminClient();
 
-    // Look up service duration
-    const { data: service } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: service } = await (supabase as any)
       .from("services")
       .select("duration_min")
       .eq("id", data.serviceId)
@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
 
     const reference = generateRef();
 
-    const { data: appt, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: appt, error } = await (supabase as any)
       .from("appointments")
       .insert({
         reference,

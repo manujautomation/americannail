@@ -52,8 +52,42 @@ export default function BookingSection() {
     return false;
   };
 
-  const handleConfirm = () => {
-    setStep(4);
+  const handleConfirm = async () => {
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      // Convert "10:00 AM" → "10:00" for the API
+      const [timePart, meridiem] = data.time.split(" ");
+      const [h, m] = timePart.split(":").map(Number);
+      const hour24 = meridiem === "PM" && h !== 12 ? h + 12 : meridiem === "AM" && h === 12 ? 0 : h;
+      const time24 = `${String(hour24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+
+      const selectedSvc = SERVICES.find((s) => s.id === data.service);
+
+      const res = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          serviceId:  selectedSvc?.id ?? data.service,
+          employeeId: data.technician,
+          date:       data.date,
+          time:       time24,
+          firstName:  data.firstName,
+          lastName:   data.lastName,
+          phone:      data.phone,
+          email:      data.email,
+          notes:      data.notes,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to book");
+      setRef(json.reference);
+      setStep(4);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const selectedService = SERVICES.find((s) => s.id === data.service);
@@ -374,15 +408,26 @@ export default function BookingSection() {
                       <ArrowRight size={14} />
                     </button>
                   ) : (
-                    <button
-                      onClick={handleConfirm}
-                      disabled={!canNext()}
-                      className="flex items-center gap-2 px-6 py-3 rounded-full text-white text-sm font-medium tracking-wider uppercase transition-all hover:opacity-90 disabled:opacity-40"
-                      style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
-                    >
-                      {t("confirm")}
-                      <CheckCircle size={14} />
-                    </button>
+                    <div className="flex flex-col items-end gap-2">
+                      {submitError && (
+                        <p className="text-xs text-red-500">{submitError}</p>
+                      )}
+                      <button
+                        onClick={handleConfirm}
+                        disabled={!canNext() || submitting}
+                        className="flex items-center gap-2 px-6 py-3 rounded-full text-white text-sm font-medium tracking-wider uppercase transition-all hover:opacity-90 disabled:opacity-40"
+                        style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+                      >
+                        {submitting ? (
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            {t("confirm")}
+                            <CheckCircle size={14} />
+                          </>
+                        )}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

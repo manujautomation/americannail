@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
     const supabase = await createAdminClient();
 
     // Upsert — re-subscribes if previously unsubscribed
-    const { error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
       .from("newsletter_subscribers")
       .upsert(
         { email: parsed.data.email, location_id: LOCATION_ID, status: "active" },

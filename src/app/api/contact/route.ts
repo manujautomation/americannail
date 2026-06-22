@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
     const supabase = await createAdminClient();
     const reference = generateRef();
 
-    const { data: msg, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: msg, error } = await (supabase as any)
       .from("messages")
       .insert({
         location_id:    LOCATION_ID,

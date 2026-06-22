@@ -31,22 +31,42 @@ export default function ConciergeWidget() {
     time: "",
     message: "",
   });
-  const [ref] = useState(() => `MSG-${Date.now().toString(36).toUpperCase()}`);
+  const [ref, setRef] = useState("");
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const reset = () => {
     setView("menu");
     setForm({ name: "", phone: "", email: "", date: "", time: "", message: "" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Demo mode: simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    setSubmitError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name:          form.name,
+          phone:         form.phone,
+          email:         form.email,
+          preferredDate: form.date,
+          preferredTime: form.time,
+          message:       form.message,
+          source:        "concierge",
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to send");
+      setRef(json.reference);
       setView("success");
-    }, 1200);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const menuItems = [
@@ -241,14 +261,20 @@ export default function ConciergeWidget() {
                         onFocus={(e) => (e.currentTarget.style.borderColor = "#B76E79")}
                         onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(183,110,121,0.2)")}
                       />
+                      {submitError && (
+                        <p className="text-xs text-red-500 text-center">{submitError}</p>
+                      )}
                       <button
                         type="submit"
                         disabled={loading}
                         className="w-full py-3 rounded-xl text-white text-sm font-medium tracking-wider flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-70"
                         style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
                       >
-                        <Send size={14} />
-                        {loading ? "Sending..." : t("form.send")}
+                        {loading ? (
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <><Send size={14} />{t("form.send")}</>
+                        )}
                       </button>
                     </motion.form>
                   )}
