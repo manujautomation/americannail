@@ -94,12 +94,6 @@ export default function Footer() {
                     href={link.href}
                     className="text-sm transition-colors hover:text-white"
                     style={{ color: "rgba(255,255,255,0.45)" }}
-                    onClick={(e) => {
-                      if (link.href.startsWith("#")) {
-                        e.preventDefault();
-                        document.querySelector(link.href)?.scrollIntoView({ behavior: "smooth" });
-                      }
-                    }}
                   >
                     {link.label}
                   </a>
@@ -176,7 +170,7 @@ export default function Footer() {
           }}
         >
           <span>
-            {t("copyright").replace("{year}", year.toString())}
+            {t("copyright", { year })}
           </span>
           <span>
             Walk-Ins Welcome · (540) 868-2811
