@@ -1,0 +1,179 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "services": "Layanan",
+    "gallery": "Galeri",
+    "reviews": "Ulasan",
+    "about": "Tentang",
+    "contact": "Kontak",
+    "bookNow": "Pesan",
+    "callNow": "Hubungi"
+  },
+  "hero": {
+    "eyebrow": "Stephens City, Virginia",
+    "headline1": "American",
+    "headline2": "Nails & Spa",
+    "tagline": "Pengalaman Kuku & Spa Mewah",
+    "rating": "4.0 · 82 Ulasan",
+    "ratingLabel": "Dinilai oleh pelanggan lokal",
+    "cta1": "Buat Janji",
+    "cta2": "Hubungi Sekarang",
+    "address": "640 Warrior Dr Ste 106, Stephens City, VA",
+    "openLabel": "Buka Hari Ini",
+    "closedLabel": "Tutup Hari Ini",
+    "walkInsWelcome": "Tanpa Janji Diterima"
+  },
+  "stats": {
+    "reviews": "Ulasan",
+    "reviewsLabel": "Pelanggan Puas",
+    "rating": "4.0",
+    "ratingLabel": "Rating Google",
+    "years": "5+",
+    "yearsLabel": "Tahun Pengalaman",
+    "services": "8+",
+    "servicesLabel": "Layanan Premium"
+  },
+  "services": {
+    "heading": "Layanan Kami",
+    "subheading": "Perawatan kuku dan spa premium yang dirancang untuk Anda",
+    "bookService": "Pesan Layanan Ini",
+    "items": {
+      "gel": {
+        "name": "Manikur Gel",
+        "description": "Cat kuku gel mengkilap tahan lama dengan hasil sempurna yang bebas lecet selama berminggu-minggu."
+      },
+      "acrylic": {
+        "name": "Kuku Akrilik",
+        "description": "Perpanjangan akrilik kustom yang tahan lama, dibentuk sesuai bentuk dan panjang yang Anda inginkan."
+      },
+      "dip": {
+        "name": "Dip Powder",
+        "description": "Sistem bubuk ringan tanpa bau untuk tampilan alami dengan kekuatan superior."
+      },
+      "pedicure": {
+        "name": "Pedikur Spa",
+        "description": "Ritual perawatan kaki yang menenangkan dengan eksfoliasi, pijat, dan perawatan kuku yang sempurna."
+      },
+      "massage": {
+        "name": "Pijat Kaki",
+        "description": "Pijat terapeutik penghilang stres menggunakan produk dan teknik spa premium."
+      },
+      "art": {
+        "name": "Seni Kuku",
+        "description": "Desain artistik kustom, gaya musiman, dan seni kuku mewah yang dilukis tangan."
+      },
+      "waxing": {
+        "name": "Waxing",
+        "description": "Waxing wajah dan tubuh yang lembut untuk hasil halus dan tahan lama."
+      },
+      "spa": {
+        "name": "Perawatan Spa",
+        "description": "Pengalaman spa lengkap yang memadukan berbagai perawatan mewah."
+      }
+    }
+  },
+  "gallery": {
+    "heading": "Karya Kami",
+    "subheading": "Pameran keahlian dan presisi kami"
+  },
+  "testimonials": {
+    "heading": "Apa Kata Pelanggan",
+    "subheading": "Pengalaman nyata dari tamu kami yang berharga"
+  },
+  "team": {
+    "heading": "Kenali Tim Kami",
+    "subheading": "Teknisi terampil yang berdedikasi pada keunggulan",
+    "yearsExp": "tahun pengalaman",
+    "specialty": "Spesialisasi"
+  },
+  "contact": {
+    "heading": "Temukan Kami",
+    "subheading": "Kunjungi kami di Stephens City, Virginia",
+    "address": "Alamat",
+    "phone": "Telepon",
+    "hours": "Jam Operasional",
+    "getDirections": "Petunjuk Arah",
+    "callUs": "Hubungi Kami",
+    "days": {
+      "sun": "Minggu",
+      "mon": "Senin",
+      "tue": "Selasa",
+      "wed": "Rabu",
+      "thu": "Kamis",
+      "fri": "Jumat",
+      "sat": "Sabtu"
+    },
+    "closed": "Tutup"
+  },
+  "concierge": {
+    "greeting": "Selamat datang di American Nails & Spa!",
+    "subgreeting": "Bagaimana kami bisa membantu Anda hari ini?",
+    "options": {
+      "book": "Buat Janji",
+      "question": "Ajukan Pertanyaan",
+      "message": "Tinggalkan Pesan",
+      "call": "Hubungi Salon",
+      "directions": "Petunjuk Arah"
+    },
+    "form": {
+      "name": "Nama Anda",
+      "phone": "Nomor Telepon",
+      "email": "Alamat Email",
+      "date": "Tanggal Pilihan",
+      "time": "Waktu Pilihan",
+      "message": "Pesan Anda",
+      "send": "Kirim Pesan",
+      "success": "Pesan diterima! Kami akan segera menghubungi Anda.",
+      "reference": "Referensi #"
+    }
+  },
+  "newsletter": {
+    "heading": "Tetap Terhubung",
+    "subheading": "Dapatkan penawaran eksklusif, promosi musiman, dan tips perawatan kuku",
+    "placeholder": "Alamat email Anda",
+    "cta": "Berlangganan",
+    "disclaimer": "Tanpa spam. Berhenti berlangganan kapan saja."
+  },
+  "footer": {
+    "tagline": "Layanan kuku dan spa mewah di jantung Stephens City.",
+    "quickLinks": "Tautan Cepat",
+    "openHours": "Jam Buka",
+    "followUs": "Ikuti Kami",
+    "comingSoon": "Segera Hadir",
+    "copyright": "© {year} American Nails & Spa. Semua hak dilindungi.",
+    "address": "640 Warrior Dr Ste 106\nStephens City, VA 22655"
+  },
+  "quickAction": {
+    "call": "Telepon",
+    "directions": "Arah",
+    "book": "Pesan",
+    "message": "Pesan"
+  },
+  "booking": {
+    "heading": "Buat Janji Anda",
+    "steps": {
+      "service": "Layanan",
+      "technician": "Teknisi",
+      "datetime": "Tanggal & Waktu",
+      "info": "Info Anda",
+      "confirm": "Konfirmasi"
+    },
+    "selectService": "Pilih layanan",
+    "selectTechnician": "Pilih teknisi",
+    "anyTechnician": "Siapa Saja Tersedia",
+    "selectDate": "Pilih tanggal",
+    "selectTime": "Pilih waktu",
+    "firstName": "Nama Depan",
+    "lastName": "Nama Belakang",
+    "phone": "Nomor Telepon",
+    "email": "Alamat Email",
+    "notes": "Permintaan Khusus",
+    "next": "Lanjutkan",
+    "back": "Kembali",
+    "confirm": "Konfirmasi Pemesanan",
+    "success": "Pemesanan Dikonfirmasi!",
+    "reference": "Referensi Pemesanan",
+    "confirmationSent": "Konfirmasi telah dicatat.",
+    "demoNote": "Mode demo — tidak perlu pembayaran"
+  }
+}

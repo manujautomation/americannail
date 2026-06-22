@@ -1,0 +1,179 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "services": "Servicios",
+    "gallery": "Galería",
+    "reviews": "Reseñas",
+    "about": "Nosotros",
+    "contact": "Contacto",
+    "bookNow": "Reservar",
+    "callNow": "Llamar"
+  },
+  "hero": {
+    "eyebrow": "Stephens City, Virginia",
+    "headline1": "American",
+    "headline2": "Nails & Spa",
+    "tagline": "Experiencia de Lujo en Uñas y Spa",
+    "rating": "4.0 · 82 Reseñas",
+    "ratingLabel": "Calificado por clientes locales",
+    "cta1": "Reservar Cita",
+    "cta2": "Llamar Ahora",
+    "address": "640 Warrior Dr Ste 106, Stephens City, VA",
+    "openLabel": "Abierto Hoy",
+    "closedLabel": "Cerrado Hoy",
+    "walkInsWelcome": "Se Aceptan Sin Cita"
+  },
+  "stats": {
+    "reviews": "Reseñas",
+    "reviewsLabel": "Clientes Felices",
+    "rating": "4.0",
+    "ratingLabel": "Calificación Google",
+    "years": "5+",
+    "yearsLabel": "Años de Experiencia",
+    "services": "8+",
+    "servicesLabel": "Servicios Premium"
+  },
+  "services": {
+    "heading": "Nuestros Servicios",
+    "subheading": "Tratamientos premium de uñas y spa diseñados para ti",
+    "bookService": "Reservar Este Servicio",
+    "items": {
+      "gel": {
+        "name": "Manicure de Gel",
+        "description": "Esmalte de gel brillante y duradero con un acabado impecable que dura semanas sin astillarse."
+      },
+      "acrylic": {
+        "name": "Uñas Acrílicas",
+        "description": "Extensiones acrílicas personalizadas y duraderas esculpidas a tu forma y largo deseado."
+      },
+      "dip": {
+        "name": "Polvo Dip",
+        "description": "Sistema de polvo ligero y sin olor para un aspecto natural con resistencia superior."
+      },
+      "pedicure": {
+        "name": "Pedicure Spa",
+        "description": "Un ritual relajante de cuidado de pies con exfoliación, masaje y cuidado impecable de uñas."
+      },
+      "massage": {
+        "name": "Masaje de Pies",
+        "description": "Masaje terapéutico para aliviar el estrés con productos y técnicas premium de spa."
+      },
+      "art": {
+        "name": "Arte de Uñas",
+        "description": "Diseños artísticos personalizados, estilos de temporada y arte de uñas de lujo pintado a mano."
+      },
+      "waxing": {
+        "name": "Depilación",
+        "description": "Depilación facial y corporal suave para resultados suaves y duraderos."
+      },
+      "spa": {
+        "name": "Tratamientos Spa",
+        "description": "Experiencias de spa completas que combinan múltiples tratamientos de lujo."
+      }
+    }
+  },
+  "gallery": {
+    "heading": "Nuestro Trabajo",
+    "subheading": "Una muestra de nuestra artesanía y precisión"
+  },
+  "testimonials": {
+    "heading": "Lo Que Dicen Nuestros Clientes",
+    "subheading": "Experiencias reales de nuestros valiosos huéspedes"
+  },
+  "team": {
+    "heading": "Conoce Nuestro Equipo",
+    "subheading": "Técnicos habilidosos dedicados a la excelencia",
+    "yearsExp": "años de experiencia",
+    "specialty": "Especialidad"
+  },
+  "contact": {
+    "heading": "Encuéntranos",
+    "subheading": "Visítanos en Stephens City, Virginia",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "hours": "Horario de Atención",
+    "getDirections": "Cómo Llegar",
+    "callUs": "Llamarnos",
+    "days": {
+      "sun": "Domingo",
+      "mon": "Lunes",
+      "tue": "Martes",
+      "wed": "Miércoles",
+      "thu": "Jueves",
+      "fri": "Viernes",
+      "sat": "Sábado"
+    },
+    "closed": "Cerrado"
+  },
+  "concierge": {
+    "greeting": "¡Bienvenido a American Nails & Spa!",
+    "subgreeting": "¿Cómo podemos ayudarte hoy?",
+    "options": {
+      "book": "Reservar una Cita",
+      "question": "Hacer una Pregunta",
+      "message": "Dejar un Mensaje",
+      "call": "Llamar al Salón",
+      "directions": "Cómo Llegar"
+    },
+    "form": {
+      "name": "Tu Nombre",
+      "phone": "Número de Teléfono",
+      "email": "Correo Electrónico",
+      "date": "Fecha Preferida",
+      "time": "Hora Preferida",
+      "message": "Tu Mensaje",
+      "send": "Enviar Mensaje",
+      "success": "¡Mensaje recibido! Nos pondremos en contacto pronto.",
+      "reference": "Referencia #"
+    }
+  },
+  "newsletter": {
+    "heading": "Mantente Informado",
+    "subheading": "Recibe ofertas exclusivas, promociones y consejos de cuidado de uñas",
+    "placeholder": "Tu correo electrónico",
+    "cta": "Suscribirse",
+    "disclaimer": "Sin spam. Cancela cuando quieras."
+  },
+  "footer": {
+    "tagline": "Servicios de lujo en uñas y spa en el corazón de Stephens City.",
+    "quickLinks": "Enlaces Rápidos",
+    "openHours": "Horario de Apertura",
+    "followUs": "Síguenos",
+    "comingSoon": "Próximamente",
+    "copyright": "© {year} American Nails & Spa. Todos los derechos reservados.",
+    "address": "640 Warrior Dr Ste 106\nStephens City, VA 22655"
+  },
+  "quickAction": {
+    "call": "Llamar",
+    "directions": "Dirección",
+    "book": "Reservar",
+    "message": "Mensaje"
+  },
+  "booking": {
+    "heading": "Reserva Tu Cita",
+    "steps": {
+      "service": "Servicio",
+      "technician": "Técnico",
+      "datetime": "Fecha y Hora",
+      "info": "Tu Info",
+      "confirm": "Confirmar"
+    },
+    "selectService": "Elige un servicio",
+    "selectTechnician": "Elige tu técnico",
+    "anyTechnician": "Cualquier Disponible",
+    "selectDate": "Selecciona una fecha",
+    "selectTime": "Selecciona una hora",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "phone": "Número de Teléfono",
+    "email": "Correo Electrónico",
+    "notes": "Solicitudes Especiales",
+    "next": "Continuar",
+    "back": "Atrás",
+    "confirm": "Confirmar Reserva",
+    "success": "¡Reserva Confirmada!",
+    "reference": "Referencia de Reserva",
+    "confirmationSent": "Se ha registrado tu confirmación.",
+    "demoNote": "Modo demo — sin pago requerido"
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "gallery": "Gallery",
+    "reviews": "Reviews",
+    "about": "About",
+    "contact": "Contact",
+    "bookNow": "Book Now",
+    "callNow": "Call Now"
+  },
+  "hero": {
+    "eyebrow": "Stephens City, Virginia",
+    "headline1": "American",
+    "headline2": "Nails & Spa",
+    "tagline": "Luxury Nail & Spa Experience",
+    "rating": "4.0 · 82 Reviews",
+    "ratingLabel": "Rated by local customers",
+    "cta1": "Book Appointment",
+    "cta2": "Call Now",
+    "address": "640 Warrior Dr Ste 106, Stephens City, VA",
+    "openLabel": "Open Today",
+    "closedLabel": "Closed Today",
+    "walkInsWelcome": "Walk-Ins Welcome"
+  },
+  "stats": {
+    "reviews": "Reviews",
+    "reviewsLabel": "Happy Clients",
+    "rating": "4.0",
+    "ratingLabel": "Google Rating",
+    "years": "5+",
+    "yearsLabel": "Years of Experience",
+    "services": "8+",
+    "servicesLabel": "Premium Services"
+  },
+  "services": {
+    "heading": "Our Services",
+    "subheading": "Premium nail and spa treatments crafted for you",
+    "bookService": "Book This Service",
+    "items": {
+      "gel": {
+        "name": "Gel Manicure",
+        "description": "Long-lasting glossy gel polish with a flawless finish that stays chip-free for weeks."
+      },
+      "acrylic": {
+        "name": "Acrylic Nails",
+        "description": "Durable custom acrylic enhancements sculpted to your desired shape and length."
+      },
+      "dip": {
+        "name": "Dip Powder",
+        "description": "Lightweight, odor-free powder system for a natural look with superior strength."
+      },
+      "pedicure": {
+        "name": "Spa Pedicure",
+        "description": "A relaxing foot care ritual with exfoliation, massage, and impeccable nail care."
+      },
+      "massage": {
+        "name": "Foot Massage",
+        "description": "Stress-relieving therapeutic massage using premium spa products and techniques."
+      },
+      "art": {
+        "name": "Nail Art",
+        "description": "Custom artistic designs, seasonal styles, and hand-painted luxury nail art."
+      },
+      "waxing": {
+        "name": "Waxing",
+        "description": "Gentle facial and body waxing for smooth, long-lasting results."
+      },
+      "spa": {
+        "name": "Spa Treatments",
+        "description": "Indulgent full-service spa experiences combining multiple luxury treatments."
+      }
+    }
+  },
+  "gallery": {
+    "heading": "Our Work",
+    "subheading": "A showcase of our artistry and precision"
+  },
+  "testimonials": {
+    "heading": "What Clients Say",
+    "subheading": "Real experiences from our valued guests"
+  },
+  "team": {
+    "heading": "Meet Our Team",
+    "subheading": "Skilled technicians dedicated to excellence",
+    "yearsExp": "years experience",
+    "specialty": "Specialty"
+  },
+  "contact": {
+    "heading": "Find Us",
+    "subheading": "Visit us in Stephens City, Virginia",
+    "address": "Address",
+    "phone": "Phone",
+    "hours": "Business Hours",
+    "getDirections": "Get Directions",
+    "callUs": "Call Us",
+    "days": {
+      "sun": "Sunday",
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday"
+    },
+    "closed": "Closed"
+  },
+  "concierge": {
+    "greeting": "Welcome to American Nails & Spa!",
+    "subgreeting": "How can we help you today?",
+    "options": {
+      "book": "Book an Appointment",
+      "question": "Ask a Question",
+      "message": "Leave a Message",
+      "call": "Call the Salon",
+      "directions": "Get Directions"
+    },
+    "form": {
+      "name": "Your Name",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "date": "Preferred Date",
+      "time": "Preferred Time",
+      "message": "Your Message",
+      "send": "Send Message",
+      "success": "Message received! We'll be in touch soon.",
+      "reference": "Reference #"
+    }
+  },
+  "newsletter": {
+    "heading": "Stay in the Loop",
+    "subheading": "Get exclusive offers, seasonal promotions, and nail care tips",
+    "placeholder": "Your email address",
+    "cta": "Subscribe",
+    "disclaimer": "No spam. Unsubscribe anytime."
+  },
+  "footer": {
+    "tagline": "Luxury nail and spa services in the heart of Stephens City.",
+    "quickLinks": "Quick Links",
+    "openHours": "Open Hours",
+    "followUs": "Follow Us",
+    "comingSoon": "Coming Soon",
+    "copyright": "© {year} American Nails & Spa. All rights reserved.",
+    "address": "640 Warrior Dr Ste 106\nStephens City, VA 22655"
+  },
+  "quickAction": {
+    "call": "Call",
+    "directions": "Directions",
+    "book": "Book",
+    "message": "Message"
+  },
+  "booking": {
+    "heading": "Book Your Appointment",
+    "steps": {
+      "service": "Service",
+      "technician": "Technician",
+      "datetime": "Date & Time",
+      "info": "Your Info",
+      "confirm": "Confirm"
+    },
+    "selectService": "Choose a service",
+    "selectTechnician": "Choose your technician",
+    "anyTechnician": "Any Available",
+    "selectDate": "Select a date",
+    "selectTime": "Select a time",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "notes": "Special Requests",
+    "next": "Continue",
+    "back": "Back",
+    "confirm": "Confirm Booking",
+    "success": "Booking Confirmed!",
+    "reference": "Booking Reference",
+    "confirmationSent": "A confirmation has been noted.",
+    "demoNote": "Demo mode — no payment required"
+  }
+}
