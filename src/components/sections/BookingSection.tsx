@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
+// serviceNames uses the "services" namespace to resolve service labels inside the booking flow
 import { CalendarDays, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
 import ScrollReveal from "@/components/motion/ScrollReveal";
 import { SERVICES, TEAM } from "@/lib/constants";
@@ -18,6 +19,7 @@ const TIME_SLOTS = [
 
 export default function BookingSection() {
   const t = useTranslations("booking");
+  const ts = useTranslations("services"); // for service names (live in services namespace)
   const [step, setStep] = useState<Step>(0);
   const [data, setData] = useState({
     service: "",
@@ -157,7 +159,7 @@ export default function BookingSection() {
                       className="grid grid-cols-2 gap-3"
                     >
                       {SERVICES.map((s) => {
-                        const name = t(`items.${s.nameKey}.name` as Parameters<typeof t>[0]);
+                        const name = ts(`items.${s.nameKey}.name` as Parameters<typeof ts>[0]);
                         return (
                           <button
                             key={s.id}

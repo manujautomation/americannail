@@ -55,6 +55,10 @@ export const metadata: Metadata = {
   },
 };
 
+export function generateStaticParams() {
+  return [{ locale: "en" }, { locale: "es" }, { locale: "id" }];
+}
+
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
