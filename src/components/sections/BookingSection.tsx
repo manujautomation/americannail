@@ -1,21 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-// serviceNames uses the "services" namespace to resolve service labels inside the booking flow
-import { CalendarDays, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
+import { CalendarDays, CheckCircle, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import ScrollReveal from "@/components/motion/ScrollReveal";
 import { SERVICES, TEAM } from "@/lib/constants";
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
-const TIME_SLOTS = [
-  "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
-  "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM",
-  "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM",
-  "4:00 PM", "4:30 PM", "5:00 PM",
-];
+type SlotStatus = { time: string; available: boolean };
+
+function to12h(time24: string) {
+  const [h, m] = time24.split(":").map(Number);
+  const suffix = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+
 
 export default function BookingSection() {
   const t = useTranslations("booking");
@@ -35,6 +37,34 @@ export default function BookingSection() {
   const [ref, setRef] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [slots, setSlots] = useState<SlotStatus[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+
+  const fetchSlots = useCallback(async (date: string, technician: string) => {
+    if (!date) return;
+    setLoadingSlots(true);
+    setSlots([]);
+    try {
+      const params = new URLSearchParams({ date });
+      if (technician && technician !== "any") params.set("employeeId", technician);
+      const res = await fetch(`/api/availability?${params}`);
+      const json = await res.json();
+      if (res.ok) setSlots(json.slots ?? []);
+    } catch {
+      // silently fall back — slots stay empty, UI will show a message
+    } finally {
+      setLoadingSlots(false);
+    }
+  }, []);
+
+  // Re-fetch whenever date or technician changes
+  useEffect(() => {
+    if (data.date) {
+      fetchSlots(data.date, data.technician);
+      setData((prev) => ({ ...prev, time: "" })); // clear stale time selection
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.date, data.technician]);
 
   const steps = [
     t("steps.service"),
@@ -56,12 +86,6 @@ export default function BookingSection() {
     setSubmitting(true);
     setSubmitError("");
     try {
-      // Convert "10:00 AM" → "10:00" for the API
-      const [timePart, meridiem] = data.time.split(" ");
-      const [h, m] = timePart.split(":").map(Number);
-      const hour24 = meridiem === "PM" && h !== 12 ? h + 12 : meridiem === "AM" && h === 12 ? 0 : h;
-      const time24 = `${String(hour24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-
       const selectedSvc = SERVICES.find((s) => s.id === data.service);
 
       const res = await fetch("/api/booking", {
@@ -71,7 +95,7 @@ export default function BookingSection() {
           serviceId:  selectedSvc?.id ?? data.service,
           employeeId: data.technician,
           date:       data.date,
-          time:       time24,
+          time:       data.time,
           firstName:  data.firstName,
           lastName:   data.lastName,
           phone:      data.phone,
@@ -309,28 +333,48 @@ export default function BookingSection() {
                         <label className="text-xs tracking-wider uppercase font-medium mb-2 block" style={{ color: "#B76E79" }}>
                           {t("selectTime")}
                         </label>
-                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                          {TIME_SLOTS.map((slot) => (
-                            <button
-                              key={slot}
-                              onClick={() => setData({ ...data, time: slot })}
-                              className="py-2 rounded-lg text-xs font-medium border transition-all"
-                              style={{
-                                background:
-                                  data.time === slot
-                                    ? "linear-gradient(135deg, #B76E79, #C9A96E)"
-                                    : "rgba(248,243,242,0.5)",
-                                borderColor:
-                                  data.time === slot
-                                    ? "transparent"
-                                    : "rgba(183,110,121,0.15)",
-                                color: data.time === slot ? "white" : "#8C7B7B",
-                              }}
-                            >
-                              {slot}
-                            </button>
-                          ))}
-                        </div>
+                        {!data.date ? (
+                          <p className="text-xs text-muted py-4 text-center">Select a date first</p>
+                        ) : loadingSlots ? (
+                          <div className="flex items-center justify-center py-6 gap-2 text-muted text-xs">
+                            <Loader2 size={14} className="animate-spin" style={{ color: "#B76E79" }} />
+                            Checking availability…
+                          </div>
+                        ) : slots.length === 0 ? (
+                          <p className="text-xs text-muted py-4 text-center">No availability data. Try another date.</p>
+                        ) : (
+                          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                            {slots.map(({ time, available }) => {
+                              const isSelected = data.time === time;
+                              return (
+                                <button
+                                  key={time}
+                                  onClick={() => available && setData({ ...data, time })}
+                                  disabled={!available}
+                                  title={!available ? "Already booked" : undefined}
+                                  className="py-2 rounded-lg text-xs font-medium border transition-all relative"
+                                  style={{
+                                    background: isSelected
+                                      ? "linear-gradient(135deg, #B76E79, #C9A96E)"
+                                      : !available
+                                      ? "rgba(220,220,220,0.4)"
+                                      : "rgba(248,243,242,0.5)",
+                                    borderColor: isSelected
+                                      ? "transparent"
+                                      : !available
+                                      ? "rgba(200,200,200,0.3)"
+                                      : "rgba(183,110,121,0.15)",
+                                    color: isSelected ? "white" : !available ? "#C0B8B8" : "#8C7B7B",
+                                    cursor: !available ? "not-allowed" : "pointer",
+                                    textDecoration: !available ? "line-through" : "none",
+                                  }}
+                                >
+                                  {to12h(time)}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   )}
@@ -471,11 +515,11 @@ export default function BookingSection() {
                   }}
                 >
                   <CalendarDays size={14} />
-                  {t(`items.${selectedService.nameKey}.name` as Parameters<typeof t>[0])} · {data.date} · {data.time}
+                  {t(`items.${selectedService.nameKey}.name` as Parameters<typeof t>[0])} · {data.date} · {to12h(data.time)}
                 </div>
               )}
               <button
-                onClick={() => { setStep(0); setData({ service: "", technician: "any", date: "", time: "", firstName: "", lastName: "", phone: "", email: "", notes: "" }); }}
+                onClick={() => { setStep(0); setSlots([]); setData({ service: "", technician: "any", date: "", time: "", firstName: "", lastName: "", phone: "", email: "", notes: "" }); }}
                 className="text-sm font-medium tracking-wider uppercase transition-colors"
                 style={{ color: "#B76E79" }}
               >
