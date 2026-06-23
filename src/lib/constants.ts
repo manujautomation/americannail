@@ -59,7 +59,7 @@ export const SERVICES = [
   {
     id: "dip-powder",
     nameKey: "dip",
-    image: "https://images.unsplash.com/photo-1604901638208-b40e5da1e8c1?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?w=600&q=80",
     duration: "60–75 min",
     color: "#C9A96E",
   },
@@ -115,7 +115,7 @@ export const GALLERY_IMAGES = [
   },
   {
     id: 3,
-    src: "https://images.unsplash.com/photo-1604901638208-b40e5da1e8c1?w=800&q=85",
+    src: "https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?w=800&q=85",
     alt: "Elegant dip powder nails",
     span: "normal",
   },
