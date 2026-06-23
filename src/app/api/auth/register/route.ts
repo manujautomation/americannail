@@ -20,33 +20,45 @@ export async function POST(req: NextRequest) {
 
     const { email, password, firstName, lastName, phone } = parsed.data;
 
-    // Use standard supabase-js client with service role key for admin auth operations
-    const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    );
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-    // Create user via admin API — bypasses email confirmation requirement
-    const { data: userData, error: createError } = await db.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { first_name: firstName, last_name: lastName, phone },
+    // Call Supabase Auth Admin REST API directly — bypasses SDK wrapper issues
+    const authRes = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": `Bearer ${serviceKey}`,
+        "apikey":        serviceKey,
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        email_confirm:  true,
+        user_metadata: { first_name: firstName, last_name: lastName, phone },
+      }),
     });
 
-    if (createError) {
-      console.error("[register] createUser error:", JSON.stringify(createError), createError);
+    const authBody = await authRes.json() as Record<string, unknown>;
+
+    if (!authRes.ok) {
+      console.error("[register] Supabase auth REST error:", authRes.status, JSON.stringify(authBody));
       return NextResponse.json({
-        error: createError.message || createError.code || JSON.stringify(createError),
-        status: createError.status,
-        code: createError.code,
+        error: (authBody?.msg as string) || (authBody?.message as string) || (authBody?.error_description as string) || JSON.stringify(authBody),
+        supabaseStatus: authRes.status,
+        raw: authBody,
       }, { status: 400 });
     }
 
-    // Ensure profile row exists with correct role
+    const userId = (authBody as { id: string }).id;
+
+    // Use service-role client for DB writes
+    const db = createClient(supabaseUrl, serviceKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+
     await db.from("profiles").upsert({
-      id:         userData.user.id,
+      id:         userId,
       email,
       role:       "customer",
       first_name: firstName,
@@ -54,9 +66,8 @@ export async function POST(req: NextRequest) {
       phone:      phone || null,
     }, { onConflict: "id" });
 
-    // Seed reward_points row
     await db.from("reward_points").upsert({
-      customer_id:     userData.user.id,
+      customer_id:     userId,
       balance:         0,
       lifetime_earned: 0,
     }, { onConflict: "customer_id", ignoreDuplicates: true });
