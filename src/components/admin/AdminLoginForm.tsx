@@ -18,9 +18,14 @@ export default function AdminLoginForm() {
     setLoading(true);
     setError("");
 
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
     if (authError) {
-      setError(authError.message);
+      setError(authError.message || authError.code || JSON.stringify(authError) || "Sign in failed");
+      setLoading(false);
+      return;
+    }
+    if (!authData?.session) {
+      setError("No session returned — check Supabase Auth settings");
       setLoading(false);
       return;
     }
