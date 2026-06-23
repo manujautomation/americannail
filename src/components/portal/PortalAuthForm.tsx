@@ -79,19 +79,27 @@ export default function PortalAuthForm() {
         });
         if (err) throw err;
       } else {
-        const { error: err } = await supabase.auth.signUp({
+        // Register via server API so email confirmation is bypassed in demo mode
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: form.email,
+            password: form.password,
+            firstName: form.firstName,
+            lastName: form.lastName,
+            phone: form.phone,
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error ?? "Registration failed");
+
+        // Now sign in with the newly created account
+        const { error: signInErr } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
-          options: {
-            data: {
-              first_name: form.firstName,
-              last_name: form.lastName,
-              phone: form.phone,
-              role: "customer",
-            },
-          },
         });
-        if (err) throw err;
+        if (signInErr) throw signInErr;
       }
       router.push("/en/portal");
       router.refresh();
