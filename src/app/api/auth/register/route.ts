@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 
 const schema = z.object({
   email:     z.string().email(),
@@ -19,9 +19,13 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, password, firstName, lastName, phone } = parsed.data;
-    const admin = await createAdminClient();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const db = admin as any;
+
+    // Use standard supabase-js client with service role key for admin auth operations
+    const db = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
 
     // Create user via admin API — bypasses email confirmation requirement
     const { data: userData, error: createError } = await db.auth.admin.createUser({
