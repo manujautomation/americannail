@@ -36,7 +36,12 @@ export async function POST(req: NextRequest) {
     });
 
     if (createError) {
-      return NextResponse.json({ error: createError.message }, { status: 400 });
+      console.error("[register] createUser error:", JSON.stringify(createError), createError);
+      return NextResponse.json({
+        error: createError.message || createError.code || JSON.stringify(createError),
+        status: createError.status,
+        code: createError.code,
+      }, { status: 400 });
     }
 
     // Ensure profile row exists with correct role
