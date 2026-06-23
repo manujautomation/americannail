@@ -50,11 +50,11 @@ export async function POST(req: NextRequest) {
     }, { onConflict: "id" });
 
     // Seed reward_points row
-    await db.from("reward_points").insert({
+    await db.from("reward_points").upsert({
       customer_id:     userData.user.id,
       balance:         0,
       lifetime_earned: 0,
-    }).onConflict("customer_id").ignore();
+    }, { onConflict: "customer_id", ignoreDuplicates: true });
 
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err) {
