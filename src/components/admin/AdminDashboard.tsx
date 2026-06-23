@@ -143,8 +143,16 @@ export default function AdminDashboard({
   };
 
   const updateApptStatus = async (id: string, status: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any).from("appointments").update({ status }).eq("id", id);
+    if (status === "completed") {
+      await fetch("/api/appointments/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ appointmentId: id }),
+      });
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).from("appointments").update({ status }).eq("id", id);
+    }
     setApptList((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
   };
 

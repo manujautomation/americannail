@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
@@ -27,6 +27,8 @@ type PointsRow = {
 };
 
 type Tab = "home" | "appointments" | "rewards";
+
+type RedeemResult = { code: string; value: number; expiresAt: string } | null;
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
   pending:   <Clock size={13} className="text-amber-500" />,
@@ -91,6 +93,27 @@ export default function PortalDashboard({
   const router = useRouter();
   const supabase = createClient();
   const [tab, setTab] = useState<Tab>("home");
+  const [currentPoints, setCurrentPoints] = useState(points.balance);
+  const [redeemLoading, setRedeemLoading] = useState(false);
+  const [redeemResult, setRedeemResult] = useState<RedeemResult>(null);
+  const [redeemError, setRedeemError] = useState("");
+
+  const handleRedeem = useCallback(async () => {
+    setRedeemLoading(true);
+    setRedeemError("");
+    setRedeemResult(null);
+    try {
+      const res = await fetch("/api/rewards/redeem", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Redemption failed");
+      setRedeemResult(json);
+      setCurrentPoints((p) => p - 100);
+    } catch (err: unknown) {
+      setRedeemError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setRedeemLoading(false);
+    }
+  }, []);
 
   const upcoming = appointments.filter((a) =>
     new Date(a.appointment_date) >= new Date() && !["cancelled", "no_show"].includes(a.status)
@@ -319,7 +342,7 @@ export default function PortalDashboard({
               />
               <Star size={28} className="mb-4 opacity-80" />
               <p className="text-5xl font-light mb-1" style={{ fontFamily: "var(--font-heading)" }}>
-                {points.balance}
+                {currentPoints}
               </p>
               <p className="text-white/70 text-sm">Points available</p>
             </motion.div>
@@ -327,7 +350,7 @@ export default function PortalDashboard({
             {/* Stats */}
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: "Lifetime Earned",  value: points.lifetime_earned },
+                { label: "Lifetime Earned",  value: points.lifetime_earned  },
                 { label: "Visits Completed", value: appointments.filter((a) => a.status === "completed").length },
               ].map((s) => (
                 <div
@@ -366,12 +389,43 @@ export default function PortalDashboard({
               </div>
             </div>
 
-            <div
-              className="rounded-2xl p-4 text-center text-xs"
-              style={{ background: "rgba(201,169,110,0.08)", border: "1px solid rgba(201,169,110,0.2)", color: "#8C7B7B" }}
-            >
-              Rewards redemption coming soon — ask our team at your next visit!
-            </div>
+            {/* Redeem section */}
+            {redeemResult ? (
+              <div
+                className="rounded-2xl p-5 text-center"
+                style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)" }}
+              >
+                <CheckCircle size={24} className="text-green-500 mx-auto mb-2" />
+                <p className="font-medium text-charcoal mb-1">Coupon Created!</p>
+                <p className="text-2xl font-bold tracking-widest mb-1" style={{ color: "#B76E79" }}>{redeemResult.code}</p>
+                <p className="text-xs text-muted">Show this code at your next visit for ${redeemResult.value} off</p>
+                <p className="text-xs text-muted mt-1">Expires {new Date(redeemResult.expiresAt).toLocaleDateString()}</p>
+              </div>
+            ) : (
+              <div
+                className="rounded-2xl p-5"
+                style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.2)" }}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-sm font-medium text-charcoal">Redeem Points</p>
+                    <p className="text-xs text-muted mt-0.5">100 pts = $5 off your next service</p>
+                  </div>
+                  <button
+                    onClick={handleRedeem}
+                    disabled={redeemLoading || currentPoints < 100}
+                    className="px-4 py-2 rounded-full text-white text-xs font-medium transition-all hover:opacity-90 disabled:opacity-40"
+                    style={{ background: "linear-gradient(135deg, #C9A96E, #B76E79)" }}
+                  >
+                    {redeemLoading ? "..." : "Redeem"}
+                  </button>
+                </div>
+                {redeemError && <p className="text-xs text-red-500">{redeemError}</p>}
+                {currentPoints < 100 && (
+                  <p className="text-xs text-muted">{100 - currentPoints} more points needed to redeem</p>
+                )}
+              </div>
+            )}
           </div>
         )}
 
