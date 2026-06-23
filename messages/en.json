@@ -13,7 +13,7 @@
     "eyebrow": "Stephens City, Virginia",
     "headline1": "American",
     "headline2": "Nails & Spa",
-    "tagline": "Luxury Nail & Spa Experience",
+    "tagline": "Personalized Nail & Spa Experience",
     "rating": "4.0 · 82 Reviews",
     "ratingLabel": "Rated by local customers",
     "cta1": "Book Appointment",
@@ -60,7 +60,7 @@
       },
       "art": {
         "name": "Nail Art",
-        "description": "Custom artistic designs, seasonal styles, and hand-painted luxury nail art."
+        "description": "Custom artistic designs, seasonal styles, and hand-painted personalized nail art."
       },
       "waxing": {
         "name": "Waxing",
@@ -68,7 +68,7 @@
       },
       "spa": {
         "name": "Spa Treatments",
-        "description": "Indulgent full-service spa experiences combining multiple luxury treatments."
+        "description": "Indulgent full-service spa experiences combining multiple personalized treatments."
       }
     }
   },
@@ -135,7 +135,7 @@
     "disclaimer": "No spam. Unsubscribe anytime."
   },
   "footer": {
-    "tagline": "Luxury nail and spa services in the heart of Stephens City.",
+    "tagline": "Personalized nail and spa services in the heart of Stephens City.",
     "quickLinks": "Quick Links",
     "openHours": "Open Hours",
     "followUs": "Follow Us",
