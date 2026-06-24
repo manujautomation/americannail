@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import { BUSINESS } from "@/lib/constants";
@@ -87,6 +87,19 @@ export default function Header() {
               {BUSINESS.phoneDisplay}
             </a>
 
+            {/* My Account — customer portal only, admin link is intentionally hidden */}
+            <Link
+              href="/en/portal/login"
+              className={cn(
+                "flex items-center gap-1.5 text-xs tracking-widest uppercase font-medium transition-colors",
+                scrolled ? "text-rose-gold hover:text-rose-gold-dark" : "text-white/80 hover:text-white"
+              )}
+              style={{ color: scrolled ? "#B76E79" : undefined }}
+            >
+              <User size={13} />
+              My Account
+            </Link>
+
             <button
               onClick={() => {
                 const el = document.querySelector("#booking");
@@ -157,12 +170,21 @@ export default function Header() {
               <div className="mt-auto flex flex-col gap-3">
                 <a
                   href={`tel:${BUSINESS.phone}`}
-                  className="flex items-center justify-center gap-2 py-3 rounded-full border border-rose-gold/30 text-sm font-medium"
+                  className="flex items-center justify-center gap-2 py-3 rounded-full border text-sm font-medium"
                   style={{ borderColor: "rgba(183,110,121,0.3)", color: "#B76E79" }}
                 >
                   <Phone size={14} />
                   {BUSINESS.phoneDisplay}
                 </a>
+                <Link
+                  href="/en/portal/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center gap-2 py-3 rounded-full border text-sm font-medium"
+                  style={{ borderColor: "rgba(183,110,121,0.3)", color: "#B76E79" }}
+                >
+                  <User size={14} />
+                  My Account
+                </Link>
                 <button
                   onClick={() => {
                     setMobileOpen(false);

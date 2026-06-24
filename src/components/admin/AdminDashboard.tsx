@@ -157,6 +157,31 @@ export default function AdminDashboard({
     setCouponResult(json);
   };
 
+  // Mark Done modal state
+  const [completingAppt, setCompletingAppt] = useState<{ id: string; name: string } | null>(null);
+  const [amountCharged, setAmountCharged] = useState("");
+  const [completeLoading, setCompleteLoading] = useState(false);
+
+  const openCompleteModal = (id: string, firstName: string, lastName: string) => {
+    setCompletingAppt({ id, name: `${firstName} ${lastName}`.trim() });
+    setAmountCharged("");
+  };
+
+  const confirmComplete = async () => {
+    if (!completingAppt) return;
+    const amount = parseFloat(amountCharged);
+    if (isNaN(amount) || amount < 0) return;
+    setCompleteLoading(true);
+    await fetch("/api/appointments/complete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ appointmentId: completingAppt.id, amountCharged: amount }),
+    });
+    setApptList((prev) => prev.map((a) => (a.id === completingAppt.id ? { ...a, status: "completed" } : a)));
+    setCompleteLoading(false);
+    setCompletingAppt(null);
+  };
+
   const applyCoupon = async () => {
     if (!couponResult) return;
     setCouponLoading(true);
@@ -177,16 +202,8 @@ export default function AdminDashboard({
   };
 
   const updateApptStatus = async (id: string, status: string) => {
-    if (status === "completed") {
-      await fetch("/api/appointments/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ appointmentId: id }),
-      });
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase as any).from("appointments").update({ status }).eq("id", id);
-    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from("appointments").update({ status }).eq("id", id);
     setApptList((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
   };
 
@@ -487,7 +504,7 @@ export default function AdminDashboard({
                           )}
                           {a.status === "confirmed" && (
                             <button
-                              onClick={() => updateApptStatus(a.id, "completed")}
+                              onClick={() => openCompleteModal(a.id, a.first_name, a.last_name)}
                               className="text-[11px] px-3 py-1 rounded-full border transition-colors hover:bg-rose-50"
                               style={{ borderColor: "rgba(183,110,121,0.2)", color: "#B76E79" }}
                             >
@@ -751,6 +768,58 @@ export default function AdminDashboard({
           </div>
         )}
       </div>
+
+      {/* ── MARK DONE MODAL ── */}
+      {completingAppt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ background: "rgba(28,28,28,0.5)", backdropFilter: "blur(4px)" }}>
+          <div className="bg-white rounded-3xl p-8 w-full max-w-sm" style={{ boxShadow: "0 24px 80px rgba(0,0,0,0.15)" }}>
+            <h2 className="text-xl font-light text-charcoal mb-1">Complete Appointment</h2>
+            <p className="text-sm text-muted mb-6">
+              Enter the actual amount charged for <strong>{completingAppt.name}</strong>. Points awarded at <strong>1 pt per $1 spent</strong>.
+            </p>
+
+            <div className="mb-6">
+              <label className="text-xs tracking-wider uppercase font-medium mb-2 block" style={{ color: "#B76E79" }}>
+                Amount Charged ($)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 45.00"
+                value={amountCharged}
+                onChange={(e) => setAmountCharged(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border text-sm outline-none"
+                style={{ borderColor: "rgba(183,110,121,0.3)", color: "#1C1C1C" }}
+                autoFocus
+              />
+              {amountCharged && !isNaN(parseFloat(amountCharged)) && (
+                <p className="text-xs mt-2" style={{ color: "#B76E79" }}>
+                  → Customer earns <strong>{Math.max(1, Math.floor(parseFloat(amountCharged)))} points</strong>
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setCompletingAppt(null)}
+                className="flex-1 py-3 rounded-full border text-sm font-medium text-muted hover:bg-slate-50 transition-colors"
+                style={{ borderColor: "rgba(183,110,121,0.2)" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmComplete}
+                disabled={completeLoading || !amountCharged || isNaN(parseFloat(amountCharged))}
+                className="flex-1 py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition-all"
+                style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+              >
+                {completeLoading ? "Saving..." : "Confirm & Complete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
