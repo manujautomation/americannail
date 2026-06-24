@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Logo from "@/components/Logo";
@@ -136,6 +136,40 @@ export default function AdminDashboard({
   const [apptList, setApptList] = useState(appointments);
   const [msgList, setMsgList] = useState(messages);
   const [reviewList, setReviewList] = useState(reviews);
+
+  // Coupon validator state
+  type CouponResult = { valid: boolean; code: string; discountValue: number; description: string; customerName: string | null; expiresAt: string; isLoyaltyReward: boolean } | null;
+  const [couponCode, setCouponCode] = useState("");
+  const [couponResult, setCouponResult] = useState<CouponResult>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const couponInputRef = useRef<HTMLInputElement>(null);
+
+  const lookupCoupon = async () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) return;
+    setCouponLoading(true); setCouponError(""); setCouponResult(null); setCouponApplied(false);
+    const res = await fetch(`/api/coupons/validate?code=${encodeURIComponent(code)}`);
+    const json = await res.json();
+    setCouponLoading(false);
+    if (!res.ok || !json.valid) { setCouponError(json.error ?? "Invalid coupon"); return; }
+    setCouponResult(json);
+  };
+
+  const applyCoupon = async () => {
+    if (!couponResult) return;
+    setCouponLoading(true);
+    const res = await fetch("/api/coupons/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: couponResult.code }),
+    });
+    const json = await res.json();
+    setCouponLoading(false);
+    if (!res.ok) { setCouponError(json.error ?? "Failed to apply"); return; }
+    setCouponApplied(true);
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -316,6 +350,82 @@ export default function AdminDashboard({
                 </div>
               </div>
             )}
+
+            {/* Coupon Validator */}
+            <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "0 2px 16px rgba(183,110,121,0.07)" }}>
+              <div className="px-6 py-4 border-b flex items-center gap-2" style={{ borderColor: "rgba(183,110,121,0.08)" }}>
+                <Star size={15} style={{ color: "#B76E79" }} />
+                <h2 className="font-medium text-charcoal text-sm">Coupon Validator</h2>
+                <span className="text-xs text-muted ml-1">— validate & apply customer reward codes at checkout</span>
+              </div>
+              <div className="p-6">
+                {!couponApplied ? (
+                  <>
+                    <div className="flex gap-2 mb-4">
+                      <input
+                        ref={couponInputRef}
+                        value={couponCode}
+                        onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponResult(null); setCouponError(""); }}
+                        onKeyDown={(e) => e.key === "Enter" && lookupCoupon()}
+                        placeholder="ANS-XXXXX-XXXXX"
+                        className="flex-1 px-4 py-2.5 rounded-xl border text-sm font-mono outline-none tracking-wider"
+                        style={{ borderColor: "rgba(183,110,121,0.2)", color: "#1C1C1C" }}
+                      />
+                      <button
+                        onClick={lookupCoupon}
+                        disabled={couponLoading || !couponCode.trim()}
+                        className="px-5 py-2.5 rounded-xl text-white text-sm font-medium disabled:opacity-50"
+                        style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+                      >
+                        {couponLoading ? "..." : "Check"}
+                      </button>
+                    </div>
+
+                    {couponError && (
+                      <div className="flex items-center gap-2 p-3 rounded-xl text-sm" style={{ background: "rgba(239,68,68,0.06)", color: "#dc2626" }}>
+                        <XCircle size={15} /> {couponError}
+                      </div>
+                    )}
+
+                    {couponResult && (
+                      <div className="rounded-xl p-4 space-y-3" style={{ background: "rgba(34,197,94,0.05)", border: "1px solid rgba(34,197,94,0.2)" }}>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span className="font-medium text-charcoal text-sm">Valid Coupon</span>
+                          {couponResult.isLoyaltyReward && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: "rgba(183,110,121,0.1)", color: "#B76E79" }}>Loyalty Reward</span>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                          <div><p className="text-muted">Discount</p><p className="font-semibold text-charcoal text-base">${couponResult.discountValue} off</p></div>
+                          <div><p className="text-muted">Expires</p><p className="font-medium text-charcoal">{new Date(couponResult.expiresAt).toLocaleDateString()}</p></div>
+                          {couponResult.customerName && (
+                            <div className="col-span-2"><p className="text-muted">Redeemed by</p><p className="font-medium text-charcoal">{couponResult.customerName}</p></div>
+                          )}
+                        </div>
+                        <button
+                          onClick={applyCoupon}
+                          disabled={couponLoading}
+                          className="w-full py-2.5 rounded-xl text-white text-sm font-medium disabled:opacity-50"
+                          style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+                        >
+                          {couponLoading ? "Applying..." : `Apply $${couponResult.discountValue} Discount`}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center gap-3 p-4 rounded-xl" style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)" }}>
+                    <CheckCircle size={20} className="text-green-500 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-charcoal text-sm">Coupon Applied</p>
+                      <p className="text-xs text-muted mt-0.5">Code <span className="font-mono">{couponResult?.code}</span> marked as used. Discount of ${couponResult?.discountValue} applied.</p>
+                    </div>
+                    <button onClick={() => { setCouponCode(""); setCouponResult(null); setCouponApplied(false); setCouponError(""); }} className="ml-auto text-xs underline text-muted">New</button>
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Recent messages */}
             <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "0 2px 16px rgba(183,110,121,0.07)" }}>

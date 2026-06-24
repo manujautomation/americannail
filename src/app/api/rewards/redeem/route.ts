@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createHmac, randomBytes } from "crypto";
 
-const REDEEM_COST   = 100; // points
-const REDEEM_VALUE  = 5;   // dollars
+const REDEEM_COST  = 100;
+const REDEEM_VALUE = 5;
 
 function adminDb() {
   return createClient(
@@ -13,9 +14,19 @@ function adminDb() {
   );
 }
 
-function generateCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  return "ANS-" + Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+// Cryptographically unpredictable code: HMAC(secret, userId+timestamp+nonce)
+// Format: ANS-<6 hex chars from HMAC>-<4 random hex chars>
+// No sequential pattern, cannot be reverse-engineered without the secret key
+function generateSecureCode(userId: string): string {
+  const secret = process.env.COUPON_SECRET ?? process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const nonce  = randomBytes(8).toString("hex");
+  const ts     = Date.now().toString();
+  const hmac   = createHmac("sha256", secret)
+    .update(`${userId}:${ts}:${nonce}`)
+    .digest("hex")
+    .slice(0, 10)
+    .toUpperCase();
+  return `ANS-${hmac.slice(0, 5)}-${hmac.slice(5)}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -36,26 +47,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `Need at least ${REDEEM_COST} points to redeem` }, { status: 400 });
   }
 
-  const code = generateCode();
-  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(); // 90 days
+  // Generate secure code and expiry
+  const code      = generateSecureCode(user.id);
+  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Deduct points
+  // Deduct points atomically first
   await db.rpc("decrement_reward_points", {
     p_customer_id: user.id,
     p_amount: REDEEM_COST,
   });
 
-  // Create coupon
+  // Create coupon — store customer_id so admin can see who redeemed
   await db.from("coupons").insert({
     code,
-    description:   `$${REDEEM_VALUE} reward redemption`,
-    discount_type: "fixed",
+    description:    `$${REDEEM_VALUE} reward redemption`,
+    discount_type:  "fixed",
     discount_value: REDEEM_VALUE,
-    usage_limit:   1,
-    expires_at:    expiresAt,
+    usage_limit:    1,
+    times_used:     0,
+    is_active:      true,
+    expires_at:     expiresAt,
+    metadata:       { redeemed_by: user.id, redeemed_at: new Date().toISOString(), type: "loyalty_reward" },
   });
 
-  // Log to reward_history
+  // Audit log
   await db.from("reward_history").insert({
     customer_id: user.id,
     type:        "redeem",
