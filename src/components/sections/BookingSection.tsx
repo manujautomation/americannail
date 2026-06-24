@@ -151,7 +151,7 @@ export default function BookingSection() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          serviceId:  selectedSvc?.id ?? data.service,
+          serviceId:  selectedSvc?.dbId ?? data.service,
           employeeId: data.technician,
           date:       data.date,
           time:       data.time,

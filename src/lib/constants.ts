@@ -44,6 +44,7 @@ export function getTodayStatus(): { isOpen: boolean; label: string; closeTime?: 
 export const SERVICES = [
   {
     id: "gel-manicure",
+    dbId: "30000000-0000-0000-0000-000000000001",
     nameKey: "gel",
     image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80",
     duration: "45–60 min",
@@ -51,6 +52,7 @@ export const SERVICES = [
   },
   {
     id: "acrylic-nails",
+    dbId: "30000000-0000-0000-0000-000000000002",
     nameKey: "acrylic",
     image: "https://images.unsplash.com/photo-1604902396830-aca29e19b067?w=600&q=80",
     duration: "75–90 min",
@@ -58,6 +60,7 @@ export const SERVICES = [
   },
   {
     id: "dip-powder",
+    dbId: "30000000-0000-0000-0000-000000000003",
     nameKey: "dip",
     image: "https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?w=600&q=80",
     duration: "60–75 min",
@@ -65,6 +68,7 @@ export const SERVICES = [
   },
   {
     id: "spa-pedicure",
+    dbId: "30000000-0000-0000-0000-000000000004",
     nameKey: "pedicure",
     image: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=600&q=80",
     duration: "60–75 min",
@@ -72,6 +76,7 @@ export const SERVICES = [
   },
   {
     id: "foot-massage",
+    dbId: "30000000-0000-0000-0000-000000000005",
     nameKey: "massage",
     image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80",
     duration: "30–45 min",
@@ -79,6 +84,7 @@ export const SERVICES = [
   },
   {
     id: "nail-art",
+    dbId: "30000000-0000-0000-0000-000000000006",
     nameKey: "art",
     image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80",
     duration: "varies",
@@ -86,6 +92,7 @@ export const SERVICES = [
   },
   {
     id: "waxing",
+    dbId: "30000000-0000-0000-0000-000000000007",
     nameKey: "waxing",
     image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80",
     duration: "15–45 min",
@@ -93,6 +100,7 @@ export const SERVICES = [
   },
   {
     id: "spa-treatments",
+    dbId: "30000000-0000-0000-0000-000000000008",
     nameKey: "spa",
     image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80",
     duration: "90+ min",
