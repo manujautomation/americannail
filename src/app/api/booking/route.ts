@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       console.error("[booking] insert error:", error);
-      return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
+      return NextResponse.json({ error: error.message, code: error.code, details: error.details }, { status: 500 });
     }
 
     return NextResponse.json({ ok: true, reference: appt.reference, id: appt.id }, { status: 201 });
