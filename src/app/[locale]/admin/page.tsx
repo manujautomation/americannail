@@ -24,7 +24,7 @@ export default async function AdminPage() {
 
   const [appts, msgs, subs, employees, inventory, reviews, customers] = await Promise.all([
     db.from("appointments")
-      .select("id, status, created_at, first_name, last_name, appointment_date, appointment_time, reference, phone, email, notes, employee_id, service_id")
+      .select("id, status, created_at, first_name, last_name, appointment_date, appointment_time, reference, phone, email, notes, employee_id, service_id, customer_id")
       .order("appointment_date", { ascending: false })
       .limit(50),
     db.from("messages")

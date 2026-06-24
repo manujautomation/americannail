@@ -15,7 +15,7 @@ import {
 type Appointment = {
   id: string; reference: string; status: string; first_name: string; last_name: string;
   appointment_date: string; appointment_time: string; created_at: string;
-  phone: string; email: string | null; notes: string | null;
+  phone: string; email: string | null; notes: string | null; customer_id: string | null;
 };
 type Message = {
   id: string; reference: string; name: string; phone: string; email: string | null;
