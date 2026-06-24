@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   // Audit log
   await db.from("reward_history").insert({
     customer_id: user.id,
-    type:        "redeem",
+    type:        "redeemed",
     points:      -REDEEM_COST,
     description: `Redeemed for $${REDEEM_VALUE} coupon (${code})`,
   });

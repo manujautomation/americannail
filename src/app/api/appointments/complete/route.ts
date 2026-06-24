@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
 
     await db.from("reward_history").insert({
       customer_id:    customerId,
-      type:           "earn",
+      type:           "earned",
       points:         pointsEarned,
       description:    `Visit completed — $${amountCharged.toFixed(2)} charged (${pointsEarned} pts @ $1/pt)`,
       appointment_id: appointmentId,
