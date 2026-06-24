@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarDays, CheckCircle, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import { CalendarDays, CheckCircle, ArrowRight, ArrowLeft, Loader2, Users } from "lucide-react";
 import ScrollReveal from "@/components/motion/ScrollReveal";
 import { SERVICES, TEAM } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/client";
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
@@ -21,7 +22,7 @@ function to12h(time24: string) {
 
 export default function BookingSection() {
   const t = useTranslations("booking");
-  const ts = useTranslations("services"); // for service names (live in services namespace)
+  const ts = useTranslations("services");
   const [step, setStep] = useState<Step>(0);
   const [data, setData] = useState({
     service: "",
@@ -39,6 +40,64 @@ export default function BookingSection() {
   const [submitError, setSubmitError] = useState("");
   const [slots, setSlots] = useState<SlotStatus[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+
+  // Logged-in customer profile
+  type Profile = { firstName: string; lastName: string; phone: string; email: string; id: string };
+  const [loggedInProfile, setLoggedInProfile] = useState<Profile | null>(null);
+  const [bookingForFriend, setBookingForFriend] = useState(false);
+
+  // Fetch profile once on mount
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: profile } = await (supabase as any)
+        .from("profiles")
+        .select("first_name, last_name, phone, email")
+        .eq("id", user.id)
+        .single();
+      if (profile) {
+        const p: Profile = {
+          id: user.id,
+          firstName: profile.first_name ?? "",
+          lastName:  profile.last_name  ?? "",
+          phone:     profile.phone      ?? "",
+          email:     profile.email      ?? user.email ?? "",
+        };
+        setLoggedInProfile(p);
+        // Pre-fill form with profile details
+        setData((prev) => ({
+          ...prev,
+          firstName: p.firstName,
+          lastName:  p.lastName,
+          phone:     p.phone,
+          email:     p.email,
+        }));
+      }
+    });
+  }, []);
+
+  // When toggling "book for a friend" — clear or restore own details
+  const toggleBookingForFriend = () => {
+    setBookingForFriend((prev) => {
+      const next = !prev;
+      if (!next && loggedInProfile) {
+        // Restore own details
+        setData((d) => ({
+          ...d,
+          firstName: loggedInProfile.firstName,
+          lastName:  loggedInProfile.lastName,
+          phone:     loggedInProfile.phone,
+          email:     loggedInProfile.email,
+        }));
+      } else {
+        // Clear for friend entry
+        setData((d) => ({ ...d, firstName: "", lastName: "", phone: "", email: "" }));
+      }
+      return next;
+    });
+  };
 
   const fetchSlots = useCallback(async (date: string, technician: string) => {
     if (!date) return;
@@ -101,6 +160,8 @@ export default function BookingSection() {
           phone:      data.phone,
           email:      data.email,
           notes:      data.notes,
+          // Link to portal account only when booking for themselves
+          customerId: (!bookingForFriend && loggedInProfile) ? loggedInProfile.id : undefined,
         }),
       });
       const json = await res.json();
@@ -388,6 +449,34 @@ export default function BookingSection() {
                       exit={{ opacity: 0, x: -20 }}
                       className="grid grid-cols-2 gap-4"
                     >
+                      {/* Book for a friend toggle — shown only when logged in */}
+                      {loggedInProfile && (
+                        <div className="col-span-2 mb-1">
+                          <button
+                            type="button"
+                            onClick={toggleBookingForFriend}
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl w-full text-left text-sm transition-all"
+                            style={{
+                              background: bookingForFriend ? "rgba(183,110,121,0.1)" : "rgba(183,110,121,0.04)",
+                              border: "1px solid rgba(183,110,121,0.2)",
+                              color: "#B76E79",
+                            }}
+                          >
+                            <Users size={15} />
+                            <span className="font-medium">
+                              {bookingForFriend ? "Booking for a friend" : "Booking for myself"}
+                            </span>
+                            <span className="ml-auto text-xs text-muted" style={{ color: "rgba(183,110,121,0.6)" }}>
+                              {bookingForFriend ? "Switch to my details" : "Book for a friend instead"}
+                            </span>
+                          </button>
+                          {!bookingForFriend && (
+                            <p className="text-xs mt-1.5 text-muted px-1">
+                              Your details have been pre-filled from your account.
+                            </p>
+                          )}
+                        </div>
+                      )}
                       {[
                         { key: "firstName", label: t("firstName"), type: "text", span: 1, required: true },
                         { key: "lastName", label: t("lastName"), type: "text", span: 1, required: false },

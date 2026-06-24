@@ -14,6 +14,7 @@ const bookingSchema = z.object({
   phone:       z.string().min(7).max(20),
   email:       z.string().email().optional().or(z.literal("")),
   notes:       z.string().max(500).optional().default(""),
+  customerId:  z.string().uuid().optional(),
 });
 
 function generateRef() {
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
         phone:            data.phone,
         email:            data.email || null,
         notes:            data.notes || null,
+        customer_id:      data.customerId ?? null,
         source:           "online",
         demo_mode:        process.env.NEXT_PUBLIC_DEMO_MODE === "true",
       })
