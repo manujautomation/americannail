@@ -604,7 +604,7 @@ export default function BookingSection() {
                   }}
                 >
                   <CalendarDays size={14} />
-                  {t(`items.${selectedService.nameKey}.name` as Parameters<typeof t>[0])} · {data.date} · {to12h(data.time)}
+                  {ts(`items.${selectedService.nameKey}.name` as Parameters<typeof ts>[0])} · {data.date} · {to12h(data.time)}
                 </div>
               )}
               <button
