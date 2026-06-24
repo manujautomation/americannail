@@ -158,13 +158,17 @@ export default function AdminDashboard({
   };
 
   // Mark Done modal state
-  const [completingAppt, setCompletingAppt] = useState<{ id: string; name: string } | null>(null);
+  const [completingAppt, setCompletingAppt] = useState<{ id: string; name: string; hasCustomer: boolean } | null>(null);
   const [amountCharged, setAmountCharged] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [completeLoading, setCompleteLoading] = useState(false);
+  const [completeResult, setCompleteResult] = useState<{ pointsAwarded: number; resolvedName: string | null } | null>(null);
 
-  const openCompleteModal = (id: string, firstName: string, lastName: string) => {
-    setCompletingAppt({ id, name: `${firstName} ${lastName}`.trim() });
+  const openCompleteModal = (id: string, firstName: string, lastName: string, hasCustomer: boolean) => {
+    setCompletingAppt({ id, name: `${firstName} ${lastName}`.trim(), hasCustomer });
     setAmountCharged("");
+    setCustomerEmail("");
+    setCompleteResult(null);
   };
 
   const confirmComplete = async () => {
@@ -172,14 +176,19 @@ export default function AdminDashboard({
     const amount = parseFloat(amountCharged);
     if (isNaN(amount) || amount < 0) return;
     setCompleteLoading(true);
-    await fetch("/api/appointments/complete", {
+    const res = await fetch("/api/appointments/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ appointmentId: completingAppt.id, amountCharged: amount }),
+      body: JSON.stringify({
+        appointmentId: completingAppt.id,
+        amountCharged: amount,
+        customerEmail: customerEmail.trim() || undefined,
+      }),
     });
+    const json = await res.json();
     setApptList((prev) => prev.map((a) => (a.id === completingAppt.id ? { ...a, status: "completed" } : a)));
     setCompleteLoading(false);
-    setCompletingAppt(null);
+    setCompleteResult({ pointsAwarded: json.pointsAwarded ?? 0, resolvedName: json.resolvedName ?? null });
   };
 
   const applyCoupon = async () => {
@@ -504,7 +513,7 @@ export default function AdminDashboard({
                           )}
                           {a.status === "confirmed" && (
                             <button
-                              onClick={() => openCompleteModal(a.id, a.first_name, a.last_name)}
+                              onClick={() => openCompleteModal(a.id, a.first_name, a.last_name, !!a.customer_id)}
                               className="text-[11px] px-3 py-1 rounded-full border transition-colors hover:bg-rose-50"
                               style={{ borderColor: "rgba(183,110,121,0.2)", color: "#B76E79" }}
                             >
@@ -775,48 +784,96 @@ export default function AdminDashboard({
           <div className="bg-white rounded-3xl p-8 w-full max-w-sm" style={{ boxShadow: "0 24px 80px rgba(0,0,0,0.15)" }}>
             <h2 className="text-xl font-light text-charcoal mb-1">Complete Appointment</h2>
             <p className="text-sm text-muted mb-6">
-              Enter the actual amount charged for <strong>{completingAppt.name}</strong>. Points awarded at <strong>1 pt per $1 spent</strong>.
+              Completing visit for <strong>{completingAppt.name}</strong>.
             </p>
 
-            <div className="mb-6">
-              <label className="text-xs tracking-wider uppercase font-medium mb-2 block" style={{ color: "#B76E79" }}>
-                Amount Charged ($)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 45.00"
-                value={amountCharged}
-                onChange={(e) => setAmountCharged(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border text-sm outline-none"
-                style={{ borderColor: "rgba(183,110,121,0.3)", color: "#1C1C1C" }}
-                autoFocus
-              />
-              {amountCharged && !isNaN(parseFloat(amountCharged)) && (
-                <p className="text-xs mt-2" style={{ color: "#B76E79" }}>
-                  → Customer earns <strong>{Math.max(1, Math.floor(parseFloat(amountCharged)))} points</strong>
-                </p>
-              )}
-            </div>
+            {!completeResult ? (
+              <>
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="text-xs tracking-wider uppercase font-medium mb-2 block" style={{ color: "#B76E79" }}>
+                      Amount Charged ($)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="e.g. 45.00"
+                      value={amountCharged}
+                      onChange={(e) => setAmountCharged(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border text-sm outline-none"
+                      style={{ borderColor: "rgba(183,110,121,0.3)", color: "#1C1C1C" }}
+                      autoFocus
+                    />
+                    {amountCharged && !isNaN(parseFloat(amountCharged)) && (
+                      <p className="text-xs mt-1.5" style={{ color: "#B76E79" }}>
+                        → <strong>{Math.max(1, Math.floor(parseFloat(amountCharged)))} points</strong> will be awarded (1 pt per $1)
+                      </p>
+                    )}
+                  </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => setCompletingAppt(null)}
-                className="flex-1 py-3 rounded-full border text-sm font-medium text-muted hover:bg-slate-50 transition-colors"
-                style={{ borderColor: "rgba(183,110,121,0.2)" }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmComplete}
-                disabled={completeLoading || !amountCharged || isNaN(parseFloat(amountCharged))}
-                className="flex-1 py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition-all"
-                style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
-              >
-                {completeLoading ? "Saving..." : "Confirm & Complete"}
-              </button>
-            </div>
+                  {!completingAppt.hasCustomer && (
+                    <div>
+                      <label className="text-xs tracking-wider uppercase font-medium mb-2 block" style={{ color: "#B76E79" }}>
+                        Customer Email <span className="normal-case font-normal text-muted">(optional — to link points)</span>
+                      </label>
+                      <input
+                        type="email"
+                        placeholder="customer@example.com"
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border text-sm outline-none"
+                        style={{ borderColor: "rgba(183,110,121,0.3)", color: "#1C1C1C" }}
+                      />
+                      <p className="text-xs mt-1.5 text-muted">If the customer has a portal account, points will be added to their balance.</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setCompletingAppt(null)}
+                    className="flex-1 py-3 rounded-full border text-sm font-medium text-muted hover:bg-slate-50 transition-colors"
+                    style={{ borderColor: "rgba(183,110,121,0.2)" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmComplete}
+                    disabled={completeLoading || !amountCharged || isNaN(parseFloat(amountCharged))}
+                    className="flex-1 py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition-all"
+                    style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+                  >
+                    {completeLoading ? "Saving..." : "Confirm & Complete"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="rounded-2xl p-4" style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.2)" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle size={16} className="text-green-500" />
+                    <p className="font-medium text-charcoal text-sm">Appointment Completed</p>
+                  </div>
+                  <p className="text-xs text-muted">Amount charged: <strong>${parseFloat(amountCharged).toFixed(2)}</strong></p>
+                  {completeResult.pointsAwarded > 0 ? (
+                    <p className="text-xs mt-1" style={{ color: "#B76E79" }}>
+                      ✦ <strong>{completeResult.pointsAwarded} points</strong> awarded
+                      {completeResult.resolvedName && ` to ${completeResult.resolvedName}`}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted mt-1">No portal account linked — no points awarded.</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => setCompletingAppt(null)}
+                  className="w-full py-3 rounded-full text-white text-sm font-medium"
+                  style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+                >
+                  Done
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
