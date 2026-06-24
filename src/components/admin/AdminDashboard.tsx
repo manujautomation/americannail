@@ -7,7 +7,8 @@ import Logo from "@/components/Logo";
 import {
   CalendarDays, MessageSquare, Users, TrendingUp, LogOut, Bell,
   CheckCircle, Clock, XCircle, ChevronRight, Package, Star,
-  UserCheck, AlertTriangle, Eye, EyeOff,
+  UserCheck, AlertTriangle, Eye, EyeOff, Plus, Pencil, Trash2,
+  ShoppingCart, ArrowDownCircle,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -40,6 +41,16 @@ type Customer = {
 type Stats = {
   totalAppointments: number; pendingAppointments: number; newMessages: number;
   subscribers: number; totalCustomers: number; lowStock: number;
+};
+
+type PurchaseOrderLine = {
+  id: string; inventory_id: string; qty_ordered: number; qty_received: number; unit_cost: number;
+  inventory: { name: string; category: string } | null;
+};
+type PurchaseOrder = {
+  id: string; supplier_name: string; status: string; total_cost: number;
+  notes: string | null; created_at: string; received_at: string | null;
+  purchase_order_lines: PurchaseOrderLine[];
 };
 
 type Tab = "overview" | "appointments" | "messages" | "customers" | "employees" | "inventory" | "reviews";
@@ -136,6 +147,106 @@ export default function AdminDashboard({
   const [apptList, setApptList] = useState(appointments);
   const [msgList, setMsgList] = useState(messages);
   const [reviewList, setReviewList] = useState(reviews);
+
+  // ── Inventory state ──
+  const [invList, setInvList] = useState<InventoryItem[]>(inventory);
+  const [invSubTab, setInvSubTab] = useState<"stock" | "orders">("stock");
+
+  // Add/edit item modal
+  const blankItem = { name: "", category: "", current_qty: 0, min_qty: 5, purchase_price: "", retail_price: "", storage_location: "" };
+  const [itemModal, setItemModal] = useState<{ open: boolean; editing: InventoryItem | null; form: typeof blankItem }>({ open: false, editing: null, form: blankItem });
+  const [itemSaving, setItemSaving] = useState(false);
+  const [itemError, setItemError] = useState("");
+
+  const openAddItem = () => setItemModal({ open: true, editing: null, form: blankItem });
+  const openEditItem = (item: InventoryItem) => setItemModal({
+    open: true, editing: item,
+    form: { name: item.name, category: item.category, current_qty: item.current_qty, min_qty: item.min_qty, purchase_price: item.purchase_price?.toString() ?? "", retail_price: item.retail_price?.toString() ?? "", storage_location: item.storage_location ?? "" },
+  });
+
+  const saveItem = async () => {
+    setItemSaving(true); setItemError("");
+    const body = {
+      ...itemModal.form,
+      current_qty: Number(itemModal.form.current_qty),
+      min_qty: Number(itemModal.form.min_qty),
+      purchase_price: itemModal.form.purchase_price !== "" ? Number(itemModal.form.purchase_price) : null,
+      retail_price: itemModal.form.retail_price !== "" ? Number(itemModal.form.retail_price) : null,
+    };
+    const method = itemModal.editing ? "PATCH" : "POST";
+    const payload = itemModal.editing ? { ...body, id: itemModal.editing.id } : body;
+    const res = await fetch("/api/inventory", { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const json = await res.json();
+    setItemSaving(false);
+    if (!res.ok) { setItemError(json.error ?? "Error saving item"); return; }
+    if (itemModal.editing) {
+      setInvList((prev) => prev.map((i) => i.id === json.item.id ? json.item : i));
+    } else {
+      setInvList((prev) => [...prev, json.item]);
+    }
+    setItemModal({ open: false, editing: null, form: blankItem });
+  };
+
+  const deleteItem = async (id: string) => {
+    if (!confirm("Remove this item from inventory?")) return;
+    await fetch("/api/inventory", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    setInvList((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  // ── Purchase Orders state ──
+  const [poList, setPoList] = useState<PurchaseOrder[]>([]);
+  const [poLoaded, setPoLoaded] = useState(false);
+  const [poLoading, setPoLoading] = useState(false);
+
+  const loadPOs = async () => {
+    if (poLoaded) return;
+    setPoLoading(true);
+    const res = await fetch("/api/purchase-orders");
+    const json = await res.json();
+    setPoLoading(false);
+    setPoList(json.orders ?? []);
+    setPoLoaded(true);
+  };
+
+  // New PO form
+  const blankPO = { supplier_name: "", notes: "" };
+  const blankPOLine = { inventory_id: "", qty_ordered: 1, unit_cost: 0 };
+  const [poModal, setPoModal] = useState(false);
+  const [poForm, setPoForm] = useState(blankPO);
+  const [poLines, setPoLines] = useState([{ ...blankPOLine }]);
+  const [poSaving, setPoSaving] = useState(false);
+  const [poError, setPoError] = useState("");
+
+  const addPOLine = () => setPoLines((prev) => [...prev, { ...blankPOLine }]);
+  const removePOLine = (i: number) => setPoLines((prev) => prev.filter((_, idx) => idx !== i));
+
+  const savePO = async () => {
+    setPoSaving(true); setPoError("");
+    const lines = poLines.filter((l) => l.inventory_id && l.qty_ordered > 0);
+    if (!lines.length) { setPoError("Add at least one item"); setPoSaving(false); return; }
+    const res = await fetch("/api/purchase-orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...poForm, lines }),
+    });
+    const json = await res.json();
+    setPoSaving(false);
+    if (!res.ok) { setPoError(json.error ?? "Error"); return; }
+    setPoList((prev) => [json.order, ...prev]);
+    setPoModal(false); setPoForm(blankPO); setPoLines([{ ...blankPOLine }]);
+  };
+
+  const receivePO = async (id: string) => {
+    if (!confirm("Mark this order as received? This will update stock quantities.")) return;
+    const res = await fetch("/api/purchase-orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    if (res.ok) {
+      setPoList((prev) => prev.map((po) => po.id === id ? { ...po, status: "received" } : po));
+      // Refresh inventory counts
+      const inv = await fetch("/api/inventory");
+      const invJson = await inv.json();
+      if (invJson.items) setInvList(invJson.items);
+    }
+  };
 
   // Coupon validator state
   type CouponResult = { valid: boolean; code: string; discountValue: number; description: string; customerName: string | null; expiresAt: string; isLoyaltyReward: boolean } | null;
@@ -673,52 +784,224 @@ export default function AdminDashboard({
 
         {/* ── INVENTORY ── */}
         {tab === "inventory" && (
-          <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "0 2px 16px rgba(183,110,121,0.07)" }}>
-            <SectionHeader title="Inventory" count={inventory.length} />
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr style={{ background: "rgba(248,243,242,0.8)" }}>
-                    {["Product", "Category", "In Stock", "Min", "Retail Price", "Location", "Status"].map((h) => (
-                      <th key={h} className="px-5 py-3 text-left text-[11px] tracking-wider uppercase font-medium" style={{ color: "#8C7B7B" }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y" style={{ borderColor: "rgba(183,110,121,0.06)" }}>
-                  {inventory.map((item) => {
-                    const isLow = item.current_qty <= item.min_qty;
-                    return (
-                      <tr key={item.id} className="hover:bg-rose-50/20 transition-colors">
-                        <td className="px-5 py-4 font-medium text-charcoal">{item.name}</td>
-                        <td className="px-5 py-4 text-muted text-xs whitespace-nowrap">{item.category}</td>
-                        <td className="px-5 py-4">
-                          <span className="font-semibold" style={{ color: isLow ? "#ef4444" : "#1C1C1C" }}>
-                            {item.current_qty}
-                          </span>
-                          {isLow && <AlertTriangle size={12} className="inline ml-1 text-red-400" />}
-                        </td>
-                        <td className="px-5 py-4 text-muted text-xs">{item.min_qty}</td>
-                        <td className="px-5 py-4 text-muted text-xs">{item.retail_price ? `$${item.retail_price}` : "—"}</td>
-                        <td className="px-5 py-4 text-muted text-xs">{item.storage_location ?? "—"}</td>
-                        <td className="px-5 py-4">
-                          {isLow ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider" style={{ background: "rgba(239,68,68,0.08)", color: "#ef4444" }}>
-                              Low Stock
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider" style={{ background: "rgba(34,197,94,0.08)", color: "#16a34a" }}>
-                              OK
-                            </span>
-                          )}
-                        </td>
+          <div className="space-y-4">
+            {/* Sub-tab bar */}
+            <div className="flex gap-2">
+              {(["stock", "orders"] as const).map((st) => (
+                <button
+                  key={st}
+                  onClick={() => { setInvSubTab(st); if (st === "orders") loadPOs(); }}
+                  className="px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                  style={invSubTab === st ? { background: "#B76E79", color: "#fff" } : { background: "#fff", color: "#8C7B7B" }}
+                >
+                  {st === "stock" ? "Stock" : "Purchase Orders"}
+                </button>
+              ))}
+              <div className="flex-1" />
+              {invSubTab === "stock" && (
+                <button
+                  onClick={openAddItem}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-white"
+                  style={{ background: "#B76E79" }}
+                >
+                  <Plus size={14} /> Add Item
+                </button>
+              )}
+              {invSubTab === "orders" && (
+                <button
+                  onClick={() => setPoModal(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-white"
+                  style={{ background: "#B76E79" }}
+                >
+                  <ShoppingCart size={14} /> New Order
+                </button>
+              )}
+            </div>
+
+            {/* Stock table */}
+            {invSubTab === "stock" && (
+              <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "0 2px 16px rgba(183,110,121,0.07)" }}>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ background: "rgba(248,243,242,0.8)" }}>
+                        {["Product", "Category", "In Stock", "Min", "Purchase", "Retail", "Location", "Status", ""].map((h) => (
+                          <th key={h} className="px-4 py-3 text-left text-[11px] tracking-wider uppercase font-medium" style={{ color: "#8C7B7B" }}>{h}</th>
+                        ))}
                       </tr>
-                    );
-                  })}
-                  {inventory.length === 0 && (
-                    <tr><td colSpan={7} className="px-6 py-12 text-center text-sm text-muted">No inventory found</td></tr>
-                  )}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody className="divide-y" style={{ borderColor: "rgba(183,110,121,0.06)" }}>
+                      {invList.filter(i => i.is_active !== false).map((item) => {
+                        const isLow = item.current_qty <= item.min_qty;
+                        return (
+                          <tr key={item.id} className="hover:bg-rose-50/20 transition-colors">
+                            <td className="px-4 py-3 font-medium text-charcoal">{item.name}</td>
+                            <td className="px-4 py-3 text-muted text-xs whitespace-nowrap">{item.category}</td>
+                            <td className="px-4 py-3">
+                              <span className="font-semibold" style={{ color: isLow ? "#ef4444" : "#1C1C1C" }}>{item.current_qty}</span>
+                              {isLow && <AlertTriangle size={12} className="inline ml-1 text-red-400" />}
+                            </td>
+                            <td className="px-4 py-3 text-muted text-xs">{item.min_qty}</td>
+                            <td className="px-4 py-3 text-muted text-xs">{item.purchase_price != null ? `$${item.purchase_price}` : "—"}</td>
+                            <td className="px-4 py-3 text-muted text-xs">{item.retail_price != null ? `$${item.retail_price}` : "—"}</td>
+                            <td className="px-4 py-3 text-muted text-xs">{item.storage_location ?? "—"}</td>
+                            <td className="px-4 py-3">
+                              {isLow ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider" style={{ background: "rgba(239,68,68,0.08)", color: "#ef4444" }}>Low Stock</span>
+                              ) : (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider" style={{ background: "rgba(34,197,94,0.08)", color: "#16a34a" }}>OK</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <button onClick={() => openEditItem(item)} className="p-1 rounded hover:bg-rose-50 transition-colors" title="Edit">
+                                  <Pencil size={13} style={{ color: "#B76E79" }} />
+                                </button>
+                                <button onClick={() => deleteItem(item.id)} className="p-1 rounded hover:bg-red-50 transition-colors" title="Remove">
+                                  <Trash2 size={13} style={{ color: "#ef4444" }} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {invList.filter(i => i.is_active !== false).length === 0 && (
+                        <tr><td colSpan={9} className="px-6 py-12 text-center text-sm text-muted">No inventory items. Click &quot;Add Item&quot; to get started.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Purchase Orders list */}
+            {invSubTab === "orders" && (
+              <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "0 2px 16px rgba(183,110,121,0.07)" }}>
+                {poLoading && <p className="px-6 py-8 text-center text-muted text-sm">Loading orders…</p>}
+                {!poLoading && poList.length === 0 && (
+                  <p className="px-6 py-12 text-center text-sm text-muted">No purchase orders yet. Click &quot;New Order&quot; to create one.</p>
+                )}
+                {poList.map((po) => (
+                  <div key={po.id} className="border-b last:border-0 p-5" style={{ borderColor: "rgba(183,110,121,0.08)" }}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-medium text-charcoal">{po.supplier_name}</p>
+                        <p className="text-xs text-muted mt-0.5">{new Date(po.created_at).toLocaleDateString()} · ${po.total_cost?.toFixed(2) ?? "0.00"} total</p>
+                        {po.notes && <p className="text-xs text-muted mt-1 italic">{po.notes}</p>}
+                      </div>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <StatusBadge status={po.status} />
+                        {po.status === "pending" && (
+                          <button
+                            onClick={() => receivePO(po.id)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                            style={{ background: "#16a34a" }}
+                          >
+                            <ArrowDownCircle size={12} /> Mark Received
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {po.purchase_order_lines?.map((line) => (
+                        <div key={line.id} className="text-xs px-3 py-2 rounded-lg" style={{ background: "rgba(248,243,242,0.8)" }}>
+                          <span className="font-medium text-charcoal">{line.inventory?.name ?? "Unknown"}</span>
+                          <span className="text-muted ml-2">× {line.qty_ordered} @ ${line.unit_cost}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── ITEM MODAL ── */}
+        {itemModal.open && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.4)" }}>
+            <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+              <h3 className="font-semibold text-charcoal mb-4">{itemModal.editing ? "Edit Item" : "Add Inventory Item"}</h3>
+              <div className="space-y-3">
+                {[
+                  { label: "Product Name *", key: "name", type: "text" },
+                  { label: "Category *", key: "category", type: "text" },
+                  { label: "Current Qty *", key: "current_qty", type: "number" },
+                  { label: "Min Qty (reorder point) *", key: "min_qty", type: "number" },
+                  { label: "Purchase Price ($)", key: "purchase_price", type: "number" },
+                  { label: "Retail Price ($)", key: "retail_price", type: "number" },
+                  { label: "Storage Location", key: "storage_location", type: "text" },
+                ].map(({ label, key, type }) => (
+                  <div key={key}>
+                    <label className="text-xs text-muted mb-1 block">{label}</label>
+                    <input
+                      type={type}
+                      value={itemModal.form[key as keyof typeof blankItem]}
+                      onChange={(e) => setItemModal((prev) => ({ ...prev, form: { ...prev.form, [key]: type === "number" ? e.target.value : e.target.value } }))}
+                      className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-1"
+                      style={{ borderColor: "rgba(183,110,121,0.3)", focusRingColor: "#B76E79" } as React.CSSProperties}
+                    />
+                  </div>
+                ))}
+              </div>
+              {itemError && <p className="text-red-500 text-xs mt-2">{itemError}</p>}
+              <div className="flex gap-3 mt-5">
+                <button onClick={() => setItemModal({ open: false, editing: null, form: blankItem })} className="flex-1 py-2 rounded-xl border text-sm text-muted" style={{ borderColor: "rgba(183,110,121,0.2)" }}>Cancel</button>
+                <button onClick={saveItem} disabled={itemSaving} className="flex-1 py-2 rounded-xl text-sm font-medium text-white" style={{ background: "#B76E79" }}>
+                  {itemSaving ? "Saving…" : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── NEW PO MODAL ── */}
+        {poModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.4)" }}>
+            <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+              <h3 className="font-semibold text-charcoal mb-4">New Purchase Order</h3>
+              <div className="space-y-3 mb-4">
+                <div>
+                  <label className="text-xs text-muted mb-1 block">Supplier Name *</label>
+                  <input type="text" value={poForm.supplier_name} onChange={(e) => setPoForm((p) => ({ ...p, supplier_name: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm outline-none" style={{ borderColor: "rgba(183,110,121,0.3)" }} />
+                </div>
+                <div>
+                  <label className="text-xs text-muted mb-1 block">Notes</label>
+                  <input type="text" value={poForm.notes} onChange={(e) => setPoForm((p) => ({ ...p, notes: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm outline-none" style={{ borderColor: "rgba(183,110,121,0.3)" }} />
+                </div>
+              </div>
+              <p className="text-xs font-medium text-muted uppercase tracking-wider mb-2">Items</p>
+              {poLines.map((line, i) => (
+                <div key={i} className="grid grid-cols-12 gap-2 mb-2 items-center">
+                  <select
+                    value={line.inventory_id}
+                    onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, inventory_id: e.target.value } : l))}
+                    className="col-span-5 border rounded-lg px-2 py-2 text-xs outline-none"
+                    style={{ borderColor: "rgba(183,110,121,0.3)" }}
+                  >
+                    <option value="">Select item…</option>
+                    {invList.filter(it => it.is_active !== false).map((it) => (
+                      <option key={it.id} value={it.id}>{it.name}</option>
+                    ))}
+                  </select>
+                  <input type="number" min={1} placeholder="Qty" value={line.qty_ordered} onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, qty_ordered: Number(e.target.value) } : l))} className="col-span-3 border rounded-lg px-2 py-2 text-xs outline-none" style={{ borderColor: "rgba(183,110,121,0.3)" }} />
+                  <input type="number" min={0} step="0.01" placeholder="$/unit" value={line.unit_cost || ""} onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, unit_cost: Number(e.target.value) } : l))} className="col-span-3 border rounded-lg px-2 py-2 text-xs outline-none" style={{ borderColor: "rgba(183,110,121,0.3)" }} />
+                  <button onClick={() => removePOLine(i)} className="col-span-1 text-red-400 hover:text-red-600 text-center">×</button>
+                </div>
+              ))}
+              <button onClick={addPOLine} className="text-xs flex items-center gap-1 mt-1 mb-4" style={{ color: "#B76E79" }}>
+                <Plus size={12} /> Add line
+              </button>
+              {poLines.length > 0 && (
+                <p className="text-xs text-muted mb-3">Total: <strong className="text-charcoal">${poLines.reduce((s, l) => s + l.qty_ordered * l.unit_cost, 0).toFixed(2)}</strong></p>
+              )}
+              {poError && <p className="text-red-500 text-xs mb-2">{poError}</p>}
+              <div className="flex gap-3">
+                <button onClick={() => { setPoModal(false); setPoForm(blankPO); setPoLines([{ ...blankPOLine }]); }} className="flex-1 py-2 rounded-xl border text-sm text-muted" style={{ borderColor: "rgba(183,110,121,0.2)" }}>Cancel</button>
+                <button onClick={savePO} disabled={poSaving} className="flex-1 py-2 rounded-xl text-sm font-medium text-white" style={{ background: "#B76E79" }}>
+                  {poSaving ? "Saving…" : "Create Order"}
+                </button>
+              </div>
             </div>
           </div>
         )}
