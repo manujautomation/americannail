@@ -38,13 +38,7 @@ export async function POST(req: NextRequest) {
 
   // Award points if appointment belongs to a registered customer
   if (appt.customer_id) {
-    // Upsert reward_points (in case row doesn't exist yet)
-    await db.from("reward_points").upsert(
-      { customer_id: appt.customer_id, balance: POINTS_PER_VISIT, lifetime_earned: POINTS_PER_VISIT },
-      { onConflict: "customer_id", ignoreDuplicates: false }
-    );
-
-    // Increment existing row
+    // RPC handles upsert + increment atomically — no separate upsert needed
     await db.rpc("increment_reward_points", {
       p_customer_id: appt.customer_id,
       p_amount: POINTS_PER_VISIT,
