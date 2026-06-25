@@ -1,0 +1,178 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "services": "Dịch vụ",
+    "gallery": "Thư viện",
+    "reviews": "Đánh giá",
+    "about": "Giới thiệu",
+    "contact": "Liên hệ",
+    "bookNow": "Đặt lịch",
+    "callNow": "Gọi ngay"
+  },
+  "hero": {
+    "eyebrow": "Stephens City, Virginia",
+    "headline1": "American",
+    "headline2": "Nails & Spa",
+    "tagline": "Trải nghiệm làm móng & spa cá nhân hóa",
+    "rating": "4.0 · 82 đánh giá",
+    "ratingLabel": "Được khách hàng địa phương đánh giá",
+    "cta1": "Đặt lịch hẹn",
+    "cta2": "Gọi ngay",
+    "address": "640 Warrior Dr Ste 106, Stephens City, VA",
+    "openLabel": "Hôm nay đang mở",
+    "closedLabel": "Hôm nay đóng cửa",
+    "walkInsWelcome": "Chào đón khách vãng lai"
+  },
+  "stats": {
+    "reviews": "Đánh giá",
+    "reviewsLabel": "Khách hàng hài lòng",
+    "rating": "4.0",
+    "ratingLabel": "Điểm Google",
+    "years": "5+",
+    "yearsLabel": "Năm kinh nghiệm",
+    "services": "8+",
+    "servicesLabel": "Dịch vụ cao cấp"
+  },
+  "services": {
+    "heading": "Dịch vụ của chúng tôi",
+    "subheading": "Các liệu trình làm móng và spa cao cấp dành riêng cho bạn",
+    "bookService": "Đặt dịch vụ này",
+    "items": {
+      "gel": {
+        "name": "Sơn Gel",
+        "description": "Sơn gel bóng lâu phai với lớp hoàn thiện mượt mà, không bị tróc trong nhiều tuần."
+      },
+      "acrylic": {
+        "name": "Móng Acrylic",
+        "description": "Bộ móng acrylic bền đẹp, được tạo hình theo kiểu dáng và độ dài bạn mong muốn."
+      },
+      "dip": {
+        "name": "Bột Nhúng (Dip Powder)",
+        "description": "Hệ thống bột nhẹ, không mùi, cho vẻ tự nhiên với độ bền vượt trội."
+      },
+      "pedicure": {
+        "name": "Pedicure Spa",
+        "description": "Liệu trình chăm sóc bàn chân thư giãn với tẩy tế bào chết, massage và làm móng hoàn hảo."
+      },
+      "massage": {
+        "name": "Massage Chân",
+        "description": "Massage trị liệu giảm căng thẳng sử dụng các sản phẩm spa cao cấp."
+      },
+      "art": {
+        "name": "Vẽ Móng Nghệ Thuật",
+        "description": "Thiết kế nghệ thuật theo yêu cầu, họa tiết theo mùa và vẽ tay cá nhân hóa."
+      },
+      "waxing": {
+        "name": "Wax Lông",
+        "description": "Wax mặt và toàn thân nhẹ nhàng cho kết quả mịn màng, lâu dài."
+      },
+      "spa": {
+        "name": "Liệu Trình Spa",
+        "description": "Trải nghiệm spa toàn diện kết hợp nhiều liệu trình cá nhân hóa."
+      }
+    }
+  },
+  "gallery": {
+    "heading": "Tác phẩm của chúng tôi",
+    "subheading": "Triển lãm nghệ thuật và sự tỉ mỉ của chúng tôi"
+  },
+  "testimonials": {
+    "heading": "Khách hàng nói gì",
+    "subheading": "Trải nghiệm thực tế từ những vị khách quý của chúng tôi"
+  },
+  "team": {
+    "heading": "Đội ngũ của chúng tôi",
+    "subheading": "Các kỹ thuật viên tài năng, tận tâm với sự xuất sắc",
+    "allServices": "Chuyên gia tất cả dịch vụ"
+  },
+  "contact": {
+    "heading": "Tìm chúng tôi",
+    "subheading": "Ghé thăm chúng tôi tại Stephens City, Virginia",
+    "address": "Địa chỉ",
+    "phone": "Điện thoại",
+    "hours": "Giờ làm việc",
+    "getDirections": "Chỉ đường",
+    "callUs": "Gọi cho chúng tôi",
+    "days": {
+      "sun": "Chủ nhật",
+      "mon": "Thứ hai",
+      "tue": "Thứ ba",
+      "wed": "Thứ tư",
+      "thu": "Thứ năm",
+      "fri": "Thứ sáu",
+      "sat": "Thứ bảy"
+    },
+    "closed": "Đóng cửa"
+  },
+  "concierge": {
+    "greeting": "Chào mừng đến với American Nails & Spa!",
+    "subgreeting": "Chúng tôi có thể giúp gì cho bạn hôm nay?",
+    "options": {
+      "book": "Đặt lịch hẹn",
+      "question": "Đặt câu hỏi",
+      "message": "Để lại tin nhắn",
+      "call": "Gọi cho salon",
+      "directions": "Chỉ đường"
+    },
+    "form": {
+      "name": "Họ tên của bạn",
+      "phone": "Số điện thoại",
+      "email": "Địa chỉ email",
+      "date": "Ngày mong muốn",
+      "time": "Giờ mong muốn",
+      "message": "Tin nhắn của bạn",
+      "send": "Gửi tin nhắn",
+      "success": "Đã nhận tin nhắn! Chúng tôi sẽ liên hệ sớm.",
+      "reference": "Mã tham chiếu #"
+    }
+  },
+  "newsletter": {
+    "heading": "Cập nhật thông tin",
+    "subheading": "Nhận ưu đãi độc quyền, khuyến mãi theo mùa và mẹo chăm sóc móng",
+    "placeholder": "Địa chỉ email của bạn",
+    "cta": "Đăng ký",
+    "disclaimer": "Không spam. Hủy đăng ký bất cứ lúc nào."
+  },
+  "footer": {
+    "tagline": "Dịch vụ làm móng và spa cá nhân hóa tại trung tâm Stephens City.",
+    "quickLinks": "Liên kết nhanh",
+    "openHours": "Giờ mở cửa",
+    "followUs": "Theo dõi chúng tôi",
+    "comingSoon": "Sắp ra mắt",
+    "copyright": "© {year} American Nails & Spa. Bảo lưu mọi quyền.",
+    "address": "640 Warrior Dr Ste 106\nStephens City, VA 22655"
+  },
+  "quickAction": {
+    "call": "Gọi",
+    "directions": "Chỉ đường",
+    "book": "Đặt lịch",
+    "message": "Nhắn tin"
+  },
+  "booking": {
+    "heading": "Đặt lịch hẹn",
+    "steps": {
+      "service": "Dịch vụ",
+      "technician": "Kỹ thuật viên",
+      "datetime": "Ngày & Giờ",
+      "info": "Thông tin",
+      "confirm": "Xác nhận"
+    },
+    "selectService": "Chọn dịch vụ",
+    "selectTechnician": "Chọn kỹ thuật viên",
+    "anyTechnician": "Bất kỳ ai có mặt",
+    "selectDate": "Chọn ngày",
+    "selectTime": "Chọn giờ",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "phone": "Số điện thoại",
+    "email": "Địa chỉ email",
+    "notes": "Yêu cầu đặc biệt",
+    "next": "Tiếp tục",
+    "back": "Quay lại",
+    "confirm": "Xác nhận đặt lịch",
+    "success": "Đặt lịch thành công!",
+    "reference": "Mã đặt lịch",
+    "confirmationSent": "Lịch hẹn đã được ghi nhận.",
+    "demoNote": "Chế độ demo — không cần thanh toán"
+  }
+}

@@ -324,7 +324,7 @@ export default function BookingSection() {
                     >
                       {[
                         { id: "any", name: t("anyTechnician"), role: "Best match for your service" },
-                        ...TEAM.map((m) => ({ id: m.id.toString(), name: m.name, role: m.specialty })),
+                        ...TEAM.map((m) => ({ id: m.id.toString(), name: m.name, role: m.role })),
                       ].map((tech) => (
                         <button
                           key={tech.id}

@@ -189,26 +189,26 @@ export const TESTIMONIALS = [
 export const TEAM = [
   {
     id: 1,
-    name: "Lily Chen",
-    role: "Lead Nail Technician",
-    specialty: "Nail Art & Acrylics",
-    years: 6,
-    avatar: null, // FUTURE: real photo
+    name: "Christina",
+    role: "Nail Technician",
+    avatar: null,
   },
   {
     id: 2,
-    name: "Sophie Tran",
-    role: "Spa Specialist",
-    specialty: "Pedicures & Massage",
-    years: 4,
+    name: "Ruby",
+    role: "Nail Technician",
     avatar: null,
   },
   {
     id: 3,
-    name: "Anna Kim",
-    role: "Color Expert",
-    specialty: "Gel & Dip Powder",
-    years: 5,
+    name: "Lynn",
+    role: "Nail Technician",
+    avatar: null,
+  },
+  {
+    id: 4,
+    name: "Bobby",
+    role: "Nail Technician",
     avatar: null,
   },
 ] as const;

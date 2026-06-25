@@ -27,7 +27,7 @@ function Avatar({ name, color }: { name: string; color: string }) {
   );
 }
 
-const COLORS = ["#B76E79", "#9A5562", "#D4A0A7"];
+const COLORS = ["#B76E79", "#9A5562", "#D4A0A7", "#C9A96E"];
 
 export default function Team() {
   const t = useTranslations("team");
@@ -60,7 +60,7 @@ export default function Team() {
         </ScrollReveal>
 
         {/* Team Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
           {TEAM.map((member, i) => (
             <ScrollReveal key={member.id} delay={i * 0.15} direction="up">
               <motion.div
@@ -108,19 +108,7 @@ export default function Team() {
                   style={{ background: "linear-gradient(90deg, #B76E79, #C9A96E)" }}
                 />
 
-                {/* Specialty */}
-                <p className="text-sm text-muted mb-2">
-                  <span className="font-medium" style={{ color: "#1C1C1C" }}>
-                    {t("specialty")}:
-                  </span>{" "}
-                  {member.specialty}
-                </p>
-                <p
-                  className="text-xs tracking-wider"
-                  style={{ color: "rgba(140,123,123,0.7)" }}
-                >
-                  {member.years} {t("yearsExp")}
-                </p>
+                <p className="text-sm text-muted">{t("allServices")}</p>
               </motion.div>
             </ScrollReveal>
           ))}
