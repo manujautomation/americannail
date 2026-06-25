@@ -1,11 +1,11 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "American Nails & Spa <notifications@americannailsspa.com>";
 const OWNER = process.env.CONTACT_EMAIL ?? "manuj.automation.ssn@gmail.com";
 
 export async function sendLowStockAlert(items: { name: string; category: string; current_qty: number; min_qty: number }[]) {
   if (!process.env.RESEND_API_KEY) return; // silently skip if not configured
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const rows = items.map((i) => `<tr><td style="padding:6px 12px">${i.name}</td><td style="padding:6px 12px">${i.category}</td><td style="padding:6px 12px;color:#ef4444;font-weight:600">${i.current_qty}</td><td style="padding:6px 12px">${i.min_qty}</td></tr>`).join("");
   await resend.emails.send({
     from: FROM,
