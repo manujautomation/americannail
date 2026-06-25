@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
+import { sendLowStockAlert } from "@/lib/email";
 
 function adminDb() {
   return createClient(
@@ -84,5 +85,8 @@ export async function PATCH(req: NextRequest) {
     }
   }
   await db.from("purchase_orders").update({ status: "received", received_at: new Date().toISOString(), received_by: user.id }).eq("id", id);
+  // Check if any items are still low after receiving
+  const { data: stillLow } = await db.from("inventory").select("name,category,current_qty,min_qty").filter("current_qty", "lte", "min_qty").eq("is_active", true);
+  if (stillLow?.length) sendLowStockAlert(stillLow).catch(() => {});
   return NextResponse.json({ ok: true });
 }

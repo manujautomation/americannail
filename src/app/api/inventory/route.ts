@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
+import { sendLowStockAlert } from "@/lib/email";
 
 const LOCATION_ID = "00000000-0000-0000-0000-000000000001";
 
@@ -68,6 +69,10 @@ export async function PATCH(req: NextRequest) {
   const db = adminDb();
   const { data, error } = await db.from("inventory").update(fields).eq("id", id).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  // Send low-stock alert if qty dropped to or below threshold
+  if (data && data.current_qty <= data.min_qty) {
+    sendLowStockAlert([{ name: data.name, category: data.category, current_qty: data.current_qty, min_qty: data.min_qty }]).catch(() => {});
+  }
   return NextResponse.json({ item: data });
 }
 

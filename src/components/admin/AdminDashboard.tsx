@@ -460,23 +460,41 @@ export default function AdminDashboard({
             </div>
 
             {/* Low stock alert */}
-            {stats.lowStock > 0 && (
-              <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "0 2px 16px rgba(239,68,68,0.07)" }}>
+            {invList.filter((i) => i.is_active !== false && i.current_qty <= i.min_qty).length > 0 && (
+              <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: "0 2px 16px rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.12)" }}>
                 <div className="px-6 py-4 flex items-center justify-between border-b" style={{ borderColor: "rgba(239,68,68,0.08)" }}>
                   <div className="flex items-center gap-2">
                     <AlertTriangle size={16} className="text-red-500" />
                     <h2 className="font-medium text-charcoal">Low Stock Alert</h2>
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "rgba(239,68,68,0.08)", color: "#ef4444" }}>
+                      {invList.filter((i) => i.is_active !== false && i.current_qty <= i.min_qty).length} items
+                    </span>
                   </div>
-                  <button onClick={() => setTab("inventory")} className="text-xs flex items-center gap-1" style={{ color: "#B76E79" }}>
-                    View all <ChevronRight size={12} />
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => {
+                        const lowItems = invList.filter((i) => i.is_active !== false && i.current_qty <= i.min_qty);
+                        setPoLines(lowItems.map((i) => ({ inventory_id: i.id, qty_ordered: Math.max(1, i.min_qty - i.current_qty + i.min_qty), unit_cost: i.purchase_price ?? 0 })));
+                        setTab("inventory");
+                        setInvSubTab("orders");
+                        setPoModal(true);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                      style={{ background: "#B76E79" }}
+                    >
+                      <ShoppingCart size={12} /> Quick Reorder
+                    </button>
+                    <button onClick={() => { setTab("inventory"); setInvSubTab("stock"); }} className="text-xs flex items-center gap-1" style={{ color: "#B76E79" }}>
+                      View all <ChevronRight size={12} />
+                    </button>
+                  </div>
                 </div>
                 <div className="divide-y" style={{ borderColor: "rgba(239,68,68,0.06)" }}>
-                  {inventory.filter((i) => i.current_qty <= i.min_qty).map((i) => (
+                  {invList.filter((i) => i.is_active !== false && i.current_qty <= i.min_qty).map((i) => (
                     <div key={i.id} className="px-6 py-3 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-charcoal">{i.name}</p>
-                        <p className="text-xs text-muted">{i.category} · {i.storage_location ?? "—"}</p>
+                        <p className="text-xs text-muted">{i.category}{i.storage_location ? ` · ${i.storage_location}` : ""}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-semibold text-red-500">{i.current_qty} left</p>
@@ -799,13 +817,29 @@ export default function AdminDashboard({
               ))}
               <div className="flex-1" />
               {invSubTab === "stock" && (
-                <button
-                  onClick={openAddItem}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-white"
-                  style={{ background: "#B76E79" }}
-                >
-                  <Plus size={14} /> Add Item
-                </button>
+                <div className="flex items-center gap-2">
+                  {invList.filter((i) => i.is_active !== false && i.current_qty <= i.min_qty).length > 0 && (
+                    <button
+                      onClick={() => {
+                        const lowItems = invList.filter((i) => i.is_active !== false && i.current_qty <= i.min_qty);
+                        setPoLines(lowItems.map((i) => ({ inventory_id: i.id, qty_ordered: Math.max(1, i.min_qty - i.current_qty + i.min_qty), unit_cost: i.purchase_price ?? 0 })));
+                        setInvSubTab("orders");
+                        setPoModal(true);
+                      }}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium"
+                      style={{ background: "rgba(239,68,68,0.08)", color: "#ef4444" }}
+                    >
+                      <ShoppingCart size={14} /> Reorder Low-Stock
+                    </button>
+                  )}
+                  <button
+                    onClick={openAddItem}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-white"
+                    style={{ background: "#B76E79" }}
+                  >
+                    <Plus size={14} /> Add Item
+                  </button>
+                </div>
               )}
               {invSubTab === "orders" && (
                 <button
