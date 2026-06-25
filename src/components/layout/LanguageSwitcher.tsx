@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const LOCALES = [
   { code: "en", label: "EN", full: "English" },
+  { code: "vi", label: "VI", full: "Tiếng Việt" },
   { code: "es", label: "ES", full: "Español" },
   { code: "id", label: "ID", full: "Bahasa Indonesia" },
 ] as const;
