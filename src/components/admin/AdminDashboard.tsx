@@ -44,11 +44,11 @@ type Stats = {
 };
 
 type PurchaseOrderLine = {
-  id: string; inventory_id: string; qty_ordered: number; qty_received: number; unit_cost: number;
+  id: string; inventory_id: string; qty_ordered: number; qty_received: number; unit_price: number;
   inventory: { name: string; category: string } | null;
 };
 type PurchaseOrder = {
-  id: string; supplier_name: string; status: string; total_cost: number;
+  id: string; supplier_name: string; status: string; total_cost: number; total_amount: number;
   notes: string | null; created_at: string; received_at: string | null;
   purchase_order_lines: PurchaseOrderLine[];
 };
@@ -940,7 +940,7 @@ export default function AdminDashboard({
                       {po.purchase_order_lines?.map((line) => (
                         <div key={line.id} className="text-xs px-3 py-2 rounded-lg" style={{ background: "rgba(248,243,242,0.8)" }}>
                           <span className="font-medium text-charcoal">{line.inventory?.name ?? "Unknown"}</span>
-                          <span className="text-muted ml-2">× {line.qty_ordered} @ ${line.unit_cost}</span>
+                          <span className="text-muted ml-2">× {line.qty_ordered} @ ${line.unit_price}</span>
                         </div>
                       ))}
                     </div>
