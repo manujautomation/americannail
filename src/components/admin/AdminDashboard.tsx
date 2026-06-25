@@ -210,14 +210,14 @@ export default function AdminDashboard({
 
   // New PO form
   const blankPO = { supplier_name: "", notes: "" };
-  const blankPOLine = { inventory_id: "", qty_ordered: 1, unit_cost: 0 };
+  const blankPOLine = { inventory_id: "", qty_ordered: 1, unit_cost: 0, search: "", showDropdown: false };
   const [poModal, setPoModal] = useState(false);
   const [poForm, setPoForm] = useState(blankPO);
   const [poLines, setPoLines] = useState([{ ...blankPOLine }]);
   const [poSaving, setPoSaving] = useState(false);
   const [poError, setPoError] = useState("");
 
-  const addPOLine = () => setPoLines((prev) => [...prev, { ...blankPOLine }]);
+  const addPOLine = () => setPoLines((prev) => [...prev, { ...blankPOLine, search: "", showDropdown: false }]);
   const removePOLine = (i: number) => setPoLines((prev) => prev.filter((_, idx) => idx !== i));
 
   const savePO = async () => {
@@ -474,7 +474,7 @@ export default function AdminDashboard({
                     <button
                       onClick={() => {
                         const lowItems = invList.filter((i) => i.is_active !== false && i.current_qty <= i.min_qty);
-                        setPoLines(lowItems.map((i) => ({ inventory_id: i.id, qty_ordered: Math.max(1, i.min_qty - i.current_qty + i.min_qty), unit_cost: i.purchase_price ?? 0 })));
+                        setPoLines(lowItems.map((i) => ({ inventory_id: i.id, qty_ordered: Math.max(1, i.min_qty - i.current_qty + i.min_qty), unit_cost: i.purchase_price ?? 0, search: "", showDropdown: false })));
                         setTab("inventory");
                         setInvSubTab("orders");
                         setPoModal(true);
@@ -822,7 +822,7 @@ export default function AdminDashboard({
                     <button
                       onClick={() => {
                         const lowItems = invList.filter((i) => i.is_active !== false && i.current_qty <= i.min_qty);
-                        setPoLines(lowItems.map((i) => ({ inventory_id: i.id, qty_ordered: Math.max(1, i.min_qty - i.current_qty + i.min_qty), unit_cost: i.purchase_price ?? 0 })));
+                        setPoLines(lowItems.map((i) => ({ inventory_id: i.id, qty_ordered: Math.max(1, i.min_qty - i.current_qty + i.min_qty), unit_cost: i.purchase_price ?? 0, search: "", showDropdown: false })));
                         setInvSubTab("orders");
                         setPoModal(true);
                       }}
@@ -1004,25 +1004,66 @@ export default function AdminDashboard({
                   <input type="text" value={poForm.notes} onChange={(e) => setPoForm((p) => ({ ...p, notes: e.target.value }))} className="w-full border rounded-lg px-3 py-2 text-sm outline-none" style={{ borderColor: "rgba(183,110,121,0.3)" }} />
                 </div>
               </div>
-              <p className="text-xs font-medium text-muted uppercase tracking-wider mb-2">Items</p>
-              {poLines.map((line, i) => (
-                <div key={i} className="grid grid-cols-12 gap-2 mb-2 items-center">
-                  <select
-                    value={line.inventory_id}
-                    onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, inventory_id: e.target.value } : l))}
-                    className="col-span-5 border rounded-lg px-2 py-2 text-xs outline-none"
-                    style={{ borderColor: "rgba(183,110,121,0.3)" }}
-                  >
-                    <option value="">Select item…</option>
-                    {invList.filter(it => it.is_active !== false).map((it) => (
-                      <option key={it.id} value={it.id}>{it.name}</option>
-                    ))}
-                  </select>
-                  <input type="number" min={1} placeholder="Qty" value={line.qty_ordered} onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, qty_ordered: Number(e.target.value) } : l))} className="col-span-3 border rounded-lg px-2 py-2 text-xs outline-none" style={{ borderColor: "rgba(183,110,121,0.3)" }} />
-                  <input type="number" min={0} step="0.01" placeholder="$/unit" value={line.unit_cost || ""} onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, unit_cost: Number(e.target.value) } : l))} className="col-span-3 border rounded-lg px-2 py-2 text-xs outline-none" style={{ borderColor: "rgba(183,110,121,0.3)" }} />
-                  <button onClick={() => removePOLine(i)} className="col-span-1 text-red-400 hover:text-red-600 text-center">×</button>
-                </div>
-              ))}
+              <div className="grid grid-cols-12 gap-2 mb-1">
+                <p className="col-span-6 text-[10px] font-medium text-muted uppercase tracking-wider">Item</p>
+                <p className="col-span-2 text-[10px] font-medium text-muted uppercase tracking-wider">Qty</p>
+                <p className="col-span-3 text-[10px] font-medium text-muted uppercase tracking-wider">Cost/unit ($)</p>
+              </div>
+              {poLines.map((line, i) => {
+                const selectedItem = invList.find((it) => it.id === line.inventory_id);
+                const filtered = invList.filter((it) => it.is_active !== false && (!line.search || it.name.toLowerCase().includes(line.search.toLowerCase()) || it.category.toLowerCase().includes(line.search.toLowerCase())));
+                return (
+                  <div key={i} className="grid grid-cols-12 gap-2 mb-2 items-start">
+                    {/* Searchable item picker */}
+                    <div className="col-span-6 relative">
+                      <input
+                        type="text"
+                        placeholder="Type to search item…"
+                        value={selectedItem ? selectedItem.name : line.search}
+                        onFocus={() => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, showDropdown: true, search: selectedItem ? "" : l.search, inventory_id: selectedItem ? "" : l.inventory_id } : l))}
+                        onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, search: e.target.value, inventory_id: "", showDropdown: true } : l))}
+                        className="w-full border rounded-lg px-2 py-2 text-xs outline-none"
+                        style={{ borderColor: line.inventory_id ? "rgba(183,110,121,0.5)" : "rgba(183,110,121,0.3)" }}
+                      />
+                      {line.showDropdown && (
+                        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg max-h-40 overflow-y-auto" style={{ borderColor: "rgba(183,110,121,0.2)" }}>
+                          {filtered.length === 0 && <p className="px-3 py-2 text-xs text-muted">No items found</p>}
+                          {filtered.map((it) => (
+                            <button
+                              key={it.id}
+                              type="button"
+                              onMouseDown={() => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, inventory_id: it.id, search: "", showDropdown: false, unit_cost: it.purchase_price ?? l.unit_cost } : l))}
+                              className="w-full text-left px-3 py-2 text-xs hover:bg-rose-50 transition-colors"
+                            >
+                              <span className="font-medium text-charcoal">{it.name}</span>
+                              <span className="text-muted ml-2">{it.category}</span>
+                              {it.purchase_price != null && <span className="text-muted ml-2">· ${it.purchase_price}/unit</span>}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="number" min={1} value={line.qty_ordered}
+                      onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, qty_ordered: Number(e.target.value) } : l))}
+                      onClick={() => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, showDropdown: false } : l))}
+                      className="col-span-2 border rounded-lg px-2 py-2 text-xs outline-none"
+                      style={{ borderColor: "rgba(183,110,121,0.3)" }}
+                    />
+                    <div className="col-span-3 relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted">$</span>
+                      <input
+                        type="number" min={0} step="0.01" value={line.unit_cost || ""}
+                        onChange={(e) => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, unit_cost: Number(e.target.value) } : l))}
+                        onClick={() => setPoLines((prev) => prev.map((l, idx) => idx === i ? { ...l, showDropdown: false } : l))}
+                        className="w-full border rounded-lg pl-5 pr-2 py-2 text-xs outline-none"
+                        style={{ borderColor: "rgba(183,110,121,0.3)" }}
+                      />
+                    </div>
+                    <button onClick={() => removePOLine(i)} className="col-span-1 text-red-400 hover:text-red-600 text-center pt-2">×</button>
+                  </div>
+                );
+              })}
               <button onClick={addPOLine} className="text-xs flex items-center gap-1 mt-1 mb-4" style={{ color: "#B76E79" }}>
                 <Plus size={12} /> Add line
               </button>
