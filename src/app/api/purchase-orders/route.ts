@@ -109,7 +109,8 @@ export async function POST(req: NextRequest) {
     notes: parsed.data.notes,
     total,
     lines: parsed.data.lines.map((l) => ({ name: nameMap[l.inventory_id] ?? l.inventory_id, qty: l.qty_ordered, unit_price: l.unit_cost })),
-  }).catch(() => {});
+  }).catch((err) => console.error("[PO email error]", err));
+  console.log("[PO email] RESEND_API_KEY set:", !!process.env.RESEND_API_KEY, "TO:", process.env.CONTACT_EMAIL);
 
   return NextResponse.json({ order: { ...po, supplier_name: parsed.data.supplier_name, total_cost: total } }, { status: 201 });
 }
