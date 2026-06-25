@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-const FROM = "American Nails & Spa <notifications@americannailsspa.com>";
+const FROM = "American Nails & Spa <onboarding@resend.dev>";
 const OWNER = process.env.CONTACT_EMAIL ?? "manuj.automation.ssn@gmail.com";
 
 export async function sendPurchaseOrderEmail(po: {
