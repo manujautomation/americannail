@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
-import { sendLowStockAlert } from "@/lib/email";
+import { sendLowStockAlert, sendPurchaseOrderEmail } from "@/lib/email";
 
 const LOCATION_ID = "00000000-0000-0000-0000-000000000001";
 // Default supplier UUID from seed data — used when no specific supplier is selected
@@ -95,6 +95,20 @@ export async function POST(req: NextRequest) {
     unit_price:        l.unit_cost,
   }));
   await db.from("purchase_order_items").insert(lines);
+
+  // Fetch item names for the email
+  const { data: itemDetails } = await db
+    .from("inventory")
+    .select("id, name")
+    .in("id", parsed.data.lines.map((l) => l.inventory_id));
+  const nameMap = Object.fromEntries((itemDetails ?? []).map((it) => [it.id, it.name]));
+  sendPurchaseOrderEmail({
+    reference,
+    supplier_name: parsed.data.supplier_name,
+    notes: parsed.data.notes,
+    total,
+    lines: parsed.data.lines.map((l) => ({ name: nameMap[l.inventory_id] ?? l.inventory_id, qty: l.qty_ordered, unit_price: l.unit_cost })),
+  }).catch(() => {});
 
   return NextResponse.json({ order: { ...po, supplier_name: parsed.data.supplier_name, total_cost: total } }, { status: 201 });
 }
