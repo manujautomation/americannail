@@ -103,14 +103,19 @@ export async function POST(req: NextRequest) {
     .select("id, name")
     .in("id", parsed.data.lines.map((l) => l.inventory_id));
   const nameMap = Object.fromEntries((itemDetails ?? []).map((it) => [it.id, it.name]));
-  sendPurchaseOrderEmail({
-    reference,
-    supplier_name: parsed.data.supplier_name,
-    notes: parsed.data.notes,
-    total,
-    lines: parsed.data.lines.map((l) => ({ name: nameMap[l.inventory_id] ?? l.inventory_id, qty: l.qty_ordered, unit_price: l.unit_cost })),
-  }).catch((err) => console.error("[PO email error]", err));
   console.log("[PO email] RESEND_API_KEY set:", !!process.env.RESEND_API_KEY, "TO:", process.env.CONTACT_EMAIL);
+  try {
+    await sendPurchaseOrderEmail({
+      reference,
+      supplier_name: parsed.data.supplier_name,
+      notes: parsed.data.notes,
+      total,
+      lines: parsed.data.lines.map((l) => ({ name: nameMap[l.inventory_id] ?? l.inventory_id, qty: l.qty_ordered, unit_price: l.unit_cost })),
+    });
+    console.log("[PO email] sent successfully");
+  } catch (err) {
+    console.error("[PO email error]", err);
+  }
 
   return NextResponse.json({ order: { ...po, supplier_name: parsed.data.supplier_name, total_cost: total } }, { status: 201 });
 }
