@@ -54,10 +54,11 @@ export async function GET() {
   // Normalize to consistent shape for UI
   const orders = (data ?? []).map((po) => ({
     ...po,
+    reference: po.reference,
     supplier_name: po.notes?.match(/^Supplier: (.+?)\n/)?.[1] ?? "—",
-    notes: po.notes?.replace(/^Supplier: .+?\n/, "") ?? po.notes,
+    notes: (po.notes?.replace(/^Supplier: .+?\n/, "") ?? "").trim() || null,
     total_cost: po.total_amount,
-    purchase_order_lines: po.purchase_order_items ?? [],
+    purchase_order_lines: (po.purchase_order_items ?? []).map((item: Record<string, unknown>) => ({ ...item, unit_price: item.unit_price ?? item.unit_cost ?? 0 })),
   }));
   return NextResponse.json({ orders });
 }

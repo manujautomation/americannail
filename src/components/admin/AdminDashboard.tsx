@@ -48,7 +48,7 @@ type PurchaseOrderLine = {
   inventory: { name: string; category: string } | null;
 };
 type PurchaseOrder = {
-  id: string; supplier_name: string; status: string; total_cost: number; total_amount: number;
+  id: string; reference: string; supplier_name: string; status: string; total_cost: number; total_amount: number;
   notes: string | null; created_at: string; received_at: string | null;
   purchase_order_lines: PurchaseOrderLine[];
 };
@@ -915,37 +915,72 @@ export default function AdminDashboard({
                 {!poLoading && poList.length === 0 && (
                   <p className="px-6 py-12 text-center text-sm text-muted">No purchase orders yet. Click &quot;New Order&quot; to create one.</p>
                 )}
-                {poList.map((po) => (
-                  <div key={po.id} className="border-b last:border-0 p-5" style={{ borderColor: "rgba(183,110,121,0.08)" }}>
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="font-medium text-charcoal">{po.supplier_name}</p>
-                        <p className="text-xs text-muted mt-0.5">{new Date(po.created_at).toLocaleDateString()} · ${po.total_cost?.toFixed(2) ?? "0.00"} total</p>
-                        {po.notes && <p className="text-xs text-muted mt-1 italic">{po.notes}</p>}
-                      </div>
-                      <div className="flex items-center gap-3 flex-shrink-0">
-                        <StatusBadge status={po.status} />
+                {poList.map((po) => {
+                  const total = po.total_cost ?? po.total_amount ?? 0;
+                  const lines = po.purchase_order_lines ?? [];
+                  return (
+                    <div key={po.id} className="border-b last:border-0 p-5" style={{ borderColor: "rgba(183,110,121,0.08)" }}>
+                      {/* Header row */}
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="font-mono text-sm font-semibold text-charcoal">{po.reference ?? "—"}</span>
+                            <StatusBadge status={po.status} />
+                          </div>
+                          <p className="text-xs text-muted">
+                            {new Date(po.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                            {po.supplier_name && po.supplier_name !== "—" && <> · Ordered by <span className="font-medium text-charcoal">{po.supplier_name}</span></>}
+                          </p>
+                          {po.notes && <p className="text-xs text-muted mt-0.5 italic">{po.notes}</p>}
+                        </div>
                         {po.status === "pending" && (
                           <button
                             onClick={() => receivePO(po.id)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white flex-shrink-0"
                             style={{ background: "#16a34a" }}
                           >
                             <ArrowDownCircle size={12} /> Mark Received
                           </button>
                         )}
                       </div>
-                    </div>
-                    <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {po.purchase_order_lines?.map((line) => (
-                        <div key={line.id} className="text-xs px-3 py-2 rounded-lg" style={{ background: "rgba(248,243,242,0.8)" }}>
-                          <span className="font-medium text-charcoal">{line.inventory?.name ?? "Unknown"}</span>
-                          <span className="text-muted ml-2">× {line.qty_ordered} @ ${line.unit_price}</span>
+
+                      {/* Line items table */}
+                      {lines.length > 0 && (
+                        <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(183,110,121,0.1)" }}>
+                          <table className="w-full text-xs">
+                            <thead>
+                              <tr style={{ background: "rgba(248,243,242,0.8)" }}>
+                                <th className="px-3 py-2 text-left font-medium text-muted">Item</th>
+                                <th className="px-3 py-2 text-center font-medium text-muted">Qty</th>
+                                <th className="px-3 py-2 text-right font-medium text-muted">Unit Price</th>
+                                <th className="px-3 py-2 text-right font-medium text-muted">Subtotal</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y" style={{ borderColor: "rgba(183,110,121,0.06)" }}>
+                              {lines.map((line) => (
+                                <tr key={line.id}>
+                                  <td className="px-3 py-2 font-medium text-charcoal">{line.inventory?.name ?? "Unknown"}</td>
+                                  <td className="px-3 py-2 text-center text-muted">{line.qty_ordered}</td>
+                                  <td className="px-3 py-2 text-right text-muted">${Number(line.unit_price).toFixed(2)}</td>
+                                  <td className="px-3 py-2 text-right font-medium text-charcoal">${(line.qty_ordered * Number(line.unit_price)).toFixed(2)}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            <tfoot>
+                              <tr style={{ background: "rgba(248,243,242,0.6)" }}>
+                                <td colSpan={3} className="px-3 py-2 text-right font-semibold text-charcoal">Total</td>
+                                <td className="px-3 py-2 text-right font-bold" style={{ color: "#B76E79" }}>${Number(total).toFixed(2)}</td>
+                              </tr>
+                            </tfoot>
+                          </table>
                         </div>
-                      ))}
+                      )}
+                      {lines.length === 0 && (
+                        <p className="text-xs text-muted italic">No line items loaded — reload the page to refresh.</p>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
