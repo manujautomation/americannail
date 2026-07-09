@@ -172,11 +172,6 @@ export default function Footer() {
           <span>
             {t("copyright", { year })}
           </span>
-          {FEATURES.ambientMusic && (
-            <span>
-              Music: &ldquo;Dreamy Flashback&rdquo; — Kevin MacLeod (incompetech.com) · CC BY 4.0
-            </span>
-          )}
           <span>
             Walk-Ins Welcome · (540) 868-2811
           </span>

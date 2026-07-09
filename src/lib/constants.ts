@@ -4,9 +4,9 @@
 export const FEATURES = {
   onlineBooking: false,
   customerPortal: false,
-  // Looping spa track with floating mute toggle. Track is CC BY 4.0
-  // ("Dreamy Flashback", Kevin MacLeod) — the footer credit must stay
-  // visible while this is on.
+  // Looping spa track with floating mute toggle. Track: "Relaxing Handpan
+  // Piano Music" by kalsstockmedia, Pixabay Content License (commercial use
+  // OK, no attribution required). Source mp3 kept in /music (gitignored).
   ambientMusic: true,
 } as const;
 

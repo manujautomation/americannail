@@ -115,11 +115,7 @@ export default function AmbientMusic() {
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.95 }}
       aria-label={playing ? "Turn off background music" : "Turn on background music"}
-      title={
-        playing
-          ? "Music on — click to mute · “Dreamy Flashback” by Kevin MacLeod (incompetech.com), CC BY 4.0"
-          : "Play calming background music"
-      }
+      title={playing ? "Music on — click to mute" : "Play calming background music"}
     >
       {playing ? (
         <span className="relative flex items-center justify-center">

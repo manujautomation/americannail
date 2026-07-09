@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local music source files (originals; compressed copy lives in public/audio)
+/music/
