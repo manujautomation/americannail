@@ -13,7 +13,7 @@ const FacebookIcon = () => (
   </svg>
 );
 import Logo from "@/components/Logo";
-import { BUSINESS, HOURS } from "@/lib/constants";
+import { BUSINESS, FEATURES, HOURS } from "@/lib/constants";
 
 const NAV_LINKS = [
   { label: "Services", href: "#services" },
@@ -21,7 +21,7 @@ const NAV_LINKS = [
   { label: "Reviews", href: "#reviews" },
   { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },
-  { label: "Book Appointment", href: "#booking" },
+  ...(FEATURES.onlineBooking ? [{ label: "Book Appointment", href: "#booking" }] : []),
 ];
 
 export default function Footer() {
@@ -172,6 +172,11 @@ export default function Footer() {
           <span>
             {t("copyright", { year })}
           </span>
+          {FEATURES.ambientMusic && (
+            <span>
+              Music: &ldquo;Dreamy Flashback&rdquo; — Kevin MacLeod (incompetech.com) · CC BY 4.0
+            </span>
+          )}
           <span>
             Walk-Ins Welcome · (540) 868-2811
           </span>

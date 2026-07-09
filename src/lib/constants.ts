@@ -1,3 +1,15 @@
+// Client is phone-first for now: online booking + portal logins are masked
+// from the public page (routes still work via direct URL). Flip to true to
+// restore all Book Appointment CTAs, the booking section, and My Account links.
+export const FEATURES = {
+  onlineBooking: false,
+  customerPortal: false,
+  // Looping spa track with floating mute toggle. Track is CC BY 4.0
+  // ("Dreamy Flashback", Kevin MacLeod) — the footer credit must stay
+  // visible while this is on.
+  ambientMusic: true,
+} as const;
+
 export const BUSINESS = {
   name: "American Nails & Spa",
   shortName: "ANS",

@@ -28,7 +28,7 @@
     "reviewsLabel": "Happy Clients",
     "rating": "4.0",
     "ratingLabel": "Google Rating",
-    "years": "5+",
+    "years": "30+",
     "yearsLabel": "Years of Experience",
     "services": "8+",
     "servicesLabel": "Premium Services"
@@ -70,7 +70,8 @@
         "name": "Spa Treatments",
         "description": "Indulgent full-service spa experiences combining multiple personalized treatments."
       }
-    }
+    },
+    "callToBook": "Call to Book"
   },
   "gallery": {
     "heading": "Our Work",

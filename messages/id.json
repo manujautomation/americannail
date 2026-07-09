@@ -28,7 +28,7 @@
     "reviewsLabel": "Pelanggan Puas",
     "rating": "4.0",
     "ratingLabel": "Rating Google",
-    "years": "5+",
+    "years": "30+",
     "yearsLabel": "Tahun Pengalaman",
     "services": "8+",
     "servicesLabel": "Layanan Premium"
@@ -70,7 +70,8 @@
         "name": "Perawatan Spa",
         "description": "Pengalaman spa lengkap yang memadukan berbagai perawatan mewah."
       }
-    }
+    },
+    "callToBook": "Telepon untuk Memesan"
   },
   "gallery": {
     "heading": "Karya Kami",

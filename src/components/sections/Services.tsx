@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock, Phone } from "lucide-react";
 import ScrollReveal from "@/components/motion/ScrollReveal";
-import { SERVICES } from "@/lib/constants";
+import { BUSINESS, FEATURES, SERVICES } from "@/lib/constants";
 
 export default function Services() {
   const t = useTranslations("services");
@@ -93,18 +93,29 @@ export default function Services() {
                     </p>
 
                     {/* CTA */}
-                    <button
-                      onClick={() =>
-                        document
-                          .querySelector("#booking")
-                          ?.scrollIntoView({ behavior: "smooth" })
-                      }
-                      className="flex items-center gap-1.5 text-xs tracking-wider uppercase font-medium transition-all duration-300 group-hover:gap-2.5"
-                      style={{ color: "#B76E79" }}
-                    >
-                      {t("bookService")}
-                      <ArrowRight size={12} className="transition-transform duration-300 group-hover:translate-x-1" />
-                    </button>
+                    {FEATURES.onlineBooking ? (
+                      <button
+                        onClick={() =>
+                          document
+                            .querySelector("#booking")
+                            ?.scrollIntoView({ behavior: "smooth" })
+                        }
+                        className="flex items-center gap-1.5 text-xs tracking-wider uppercase font-medium transition-all duration-300 group-hover:gap-2.5"
+                        style={{ color: "#B76E79" }}
+                      >
+                        {t("bookService")}
+                        <ArrowRight size={12} className="transition-transform duration-300 group-hover:translate-x-1" />
+                      </button>
+                    ) : (
+                      <a
+                        href={`tel:${BUSINESS.phone}`}
+                        className="flex items-center gap-1.5 text-xs tracking-wider uppercase font-medium transition-all duration-300 group-hover:gap-2.5"
+                        style={{ color: "#B76E79" }}
+                      >
+                        <Phone size={11} />
+                        {t("callToBook")}
+                      </a>
+                    )}
                   </div>
 
                   {/* Rose gold top border on hover */}
@@ -122,18 +133,29 @@ export default function Services() {
 
         {/* Bottom CTA */}
         <ScrollReveal className="text-center mt-14" delay={0.2}>
-          <button
-            onClick={() =>
-              document
-                .querySelector("#booking")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-white text-sm tracking-[0.15em] uppercase font-medium transition-all duration-300 hover:shadow-rose hover:-translate-y-0.5"
-            style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
-          >
-            Book Any Service
-            <ArrowRight size={14} />
-          </button>
+          {FEATURES.onlineBooking ? (
+            <button
+              onClick={() =>
+                document
+                  .querySelector("#booking")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-white text-sm tracking-[0.15em] uppercase font-medium transition-all duration-300 hover:shadow-rose hover:-translate-y-0.5"
+              style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+            >
+              Book Any Service
+              <ArrowRight size={14} />
+            </button>
+          ) : (
+            <a
+              href={`tel:${BUSINESS.phone}`}
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-white text-sm tracking-[0.15em] uppercase font-medium transition-all duration-300 hover:shadow-rose hover:-translate-y-0.5"
+              style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+            >
+              <Phone size={14} />
+              {t("callToBook")} · {BUSINESS.phoneDisplay}
+            </a>
+          )}
         </ScrollReveal>
       </div>
     </section>

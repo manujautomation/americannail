@@ -15,7 +15,7 @@ import {
   Send,
   CheckCircle,
 } from "lucide-react";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
 
 type View = "menu" | "message" | "success";
 
@@ -70,14 +70,16 @@ export default function ConciergeWidget() {
   };
 
   const menuItems = [
-    {
-      key: "book",
-      icon: <CalendarDays size={16} />,
-      action: () => {
-        setOpen(false);
-        document.querySelector("#booking")?.scrollIntoView({ behavior: "smooth" });
-      },
-    },
+    ...(FEATURES.onlineBooking
+      ? [{
+          key: "book",
+          icon: <CalendarDays size={16} />,
+          action: () => {
+            setOpen(false);
+            document.querySelector("#booking")?.scrollIntoView({ behavior: "smooth" });
+          },
+        } as const]
+      : []),
     {
       key: "question",
       icon: <HelpCircle size={16} />,

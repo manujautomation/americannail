@@ -28,7 +28,7 @@
     "reviewsLabel": "Khách hàng hài lòng",
     "rating": "4.0",
     "ratingLabel": "Điểm Google",
-    "years": "5+",
+    "years": "30+",
     "yearsLabel": "Năm kinh nghiệm",
     "services": "8+",
     "servicesLabel": "Dịch vụ cao cấp"
@@ -70,7 +70,8 @@
         "name": "Liệu Trình Spa",
         "description": "Trải nghiệm spa toàn diện kết hợp nhiều liệu trình cá nhân hóa."
       }
-    }
+    },
+    "callToBook": "Gọi để đặt lịch"
   },
   "gallery": {
     "heading": "Tác phẩm của chúng tôi",

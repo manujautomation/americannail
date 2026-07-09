@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { Phone, MapPin, ChevronDown, Star, CalendarDays } from "lucide-react";
-import { BUSINESS, getTodayStatus } from "@/lib/constants";
+import { BUSINESS, FEATURES, getTodayStatus } from "@/lib/constants";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=1920&q=90";
@@ -188,25 +188,31 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 3.2 }}
         >
-          <button
-            onClick={() =>
-              document
-                .querySelector("#booking")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-            className="group flex items-center gap-2.5 px-8 py-4 rounded-full text-white text-sm tracking-[0.15em] uppercase font-medium transition-all duration-300 hover:opacity-90 hover:shadow-lg hover:-translate-y-0.5"
-            style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
-          >
-            <CalendarDays size={15} />
-            {t("cta1")}
-          </button>
+          {FEATURES.onlineBooking && (
+            <button
+              onClick={() =>
+                document
+                  .querySelector("#booking")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="group flex items-center gap-2.5 px-8 py-4 rounded-full text-white text-sm tracking-[0.15em] uppercase font-medium transition-all duration-300 hover:opacity-90 hover:shadow-lg hover:-translate-y-0.5"
+              style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+            >
+              <CalendarDays size={15} />
+              {t("cta1")}
+            </button>
+          )}
           <a
             href={`tel:${BUSINESS.phone}`}
-            className="flex items-center gap-2.5 px-8 py-4 rounded-full text-white text-sm tracking-[0.15em] uppercase font-medium transition-all duration-300 hover:-translate-y-0.5"
-            style={{
-              border: "1px solid rgba(255,255,255,0.35)",
-              backdropFilter: "blur(8px)",
-            }}
+            className="flex items-center gap-2.5 px-8 py-4 rounded-full text-white text-sm tracking-[0.15em] uppercase font-medium transition-all duration-300 hover:opacity-90 hover:shadow-lg hover:-translate-y-0.5"
+            style={
+              FEATURES.onlineBooking
+                ? {
+                    border: "1px solid rgba(255,255,255,0.35)",
+                    backdropFilter: "blur(8px)",
+                  }
+                : { background: "linear-gradient(135deg, #B76E79, #C9A96E)" }
+            }
           >
             <Phone size={15} />
             {t("cta2")}

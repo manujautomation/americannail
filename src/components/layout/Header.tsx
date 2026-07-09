@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const NAV_LINKS = [
@@ -21,6 +21,7 @@ const NAV_LINKS = [
 
 export default function Header() {
   const t = useTranslations("nav");
+  const tHero = useTranslations("hero");
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -88,28 +89,40 @@ export default function Header() {
             </a>
 
             {/* My Account — customer portal only, admin link is intentionally hidden */}
-            <Link
-              href="/en/portal/login"
-              className={cn(
-                "flex items-center gap-1.5 text-xs tracking-widest uppercase font-medium transition-colors",
-                scrolled ? "text-rose-gold hover:text-rose-gold-dark" : "text-white/80 hover:text-white"
-              )}
-              style={{ color: scrolled ? "#B76E79" : undefined }}
-            >
-              <User size={13} />
-              My Account
-            </Link>
+            {FEATURES.customerPortal && (
+              <Link
+                href="/en/portal/login"
+                className={cn(
+                  "flex items-center gap-1.5 text-xs tracking-widest uppercase font-medium transition-colors",
+                  scrolled ? "text-rose-gold hover:text-rose-gold-dark" : "text-white/80 hover:text-white"
+                )}
+                style={{ color: scrolled ? "#B76E79" : undefined }}
+              >
+                <User size={13} />
+                My Account
+              </Link>
+            )}
 
-            <button
-              onClick={() => {
-                const el = document.querySelector("#booking");
-                el?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="px-5 py-2.5 rounded-full text-xs tracking-widest uppercase font-medium text-white transition-all duration-300 hover:opacity-90 hover:shadow-rose"
-              style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
-            >
-              {t("bookNow")}
-            </button>
+            {FEATURES.onlineBooking ? (
+              <button
+                onClick={() => {
+                  const el = document.querySelector("#booking");
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="px-5 py-2.5 rounded-full text-xs tracking-widest uppercase font-medium text-white transition-all duration-300 hover:opacity-90 hover:shadow-rose"
+                style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+              >
+                {t("bookNow")}
+              </button>
+            ) : (
+              <a
+                href={`tel:${BUSINESS.phone}`}
+                className="px-5 py-2.5 rounded-full text-xs tracking-widest uppercase font-medium text-white transition-all duration-300 hover:opacity-90 hover:shadow-rose"
+                style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+              >
+                {tHero("cta2")}
+              </a>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -176,25 +189,29 @@ export default function Header() {
                   <Phone size={14} />
                   {BUSINESS.phoneDisplay}
                 </a>
-                <Link
-                  href="/en/portal/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 py-3 rounded-full border text-sm font-medium"
-                  style={{ borderColor: "rgba(183,110,121,0.3)", color: "#B76E79" }}
-                >
-                  <User size={14} />
-                  My Account
-                </Link>
-                <button
-                  onClick={() => {
-                    setMobileOpen(false);
-                    document.querySelector("#booking")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="py-3 rounded-full text-white text-sm font-medium tracking-wider uppercase"
-                  style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
-                >
-                  {t("bookNow")}
-                </button>
+                {FEATURES.customerPortal && (
+                  <Link
+                    href="/en/portal/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center gap-2 py-3 rounded-full border text-sm font-medium"
+                    style={{ borderColor: "rgba(183,110,121,0.3)", color: "#B76E79" }}
+                  >
+                    <User size={14} />
+                    My Account
+                  </Link>
+                )}
+                {FEATURES.onlineBooking && (
+                  <button
+                    onClick={() => {
+                      setMobileOpen(false);
+                      document.querySelector("#booking")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="py-3 rounded-full text-white text-sm font-medium tracking-wider uppercase"
+                    style={{ background: "linear-gradient(135deg, #B76E79, #C9A96E)" }}
+                  >
+                    {t("bookNow")}
+                  </button>
+                )}
                 <LanguageSwitcher scrolled={true} mobile />
               </div>
             </motion.div>

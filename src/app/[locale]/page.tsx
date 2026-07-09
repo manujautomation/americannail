@@ -1,6 +1,7 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import QuickActionBar from "@/components/layout/QuickActionBar";
+import AmbientMusic from "@/components/layout/AmbientMusic";
 import ConciergeWidget from "@/components/concierge/ConciergeWidget";
 import Hero from "@/components/sections/Hero";
 import Stats from "@/components/sections/Stats";
@@ -11,6 +12,7 @@ import Team from "@/components/sections/Team";
 import BookingSection from "@/components/sections/BookingSection";
 import Contact from "@/components/sections/Contact";
 import Newsletter from "@/components/sections/Newsletter";
+import { FEATURES } from "@/lib/constants";
 
 export default function HomePage() {
   return (
@@ -24,7 +26,7 @@ export default function HomePage() {
         <Gallery />
         <Testimonials />
         <Team />
-        <BookingSection />
+        {FEATURES.onlineBooking && <BookingSection />}
         <Contact />
         <Newsletter />
       </main>
@@ -32,6 +34,7 @@ export default function HomePage() {
       <Footer />
       <QuickActionBar />
       <ConciergeWidget />
+      {FEATURES.ambientMusic && <AmbientMusic />}
     </>
   );
 }

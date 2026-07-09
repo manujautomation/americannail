@@ -48,7 +48,7 @@ export default function Stats() {
       sublabel: "Google",
     },
     {
-      value: 5,
+      value: 30,
       suffix: "+",
       label: t("yearsLabel"),
       sublabel: t("years"),

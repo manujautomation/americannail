@@ -28,7 +28,7 @@
     "reviewsLabel": "Clientes Felices",
     "rating": "4.0",
     "ratingLabel": "Calificación Google",
-    "years": "5+",
+    "years": "30+",
     "yearsLabel": "Años de Experiencia",
     "services": "8+",
     "servicesLabel": "Servicios Premium"
@@ -70,7 +70,8 @@
         "name": "Tratamientos Spa",
         "description": "Experiencias de spa completas que combinan múltiples tratamientos de lujo."
       }
-    }
+    },
+    "callToBook": "Llama para Reservar"
   },
   "gallery": {
     "heading": "Nuestro Trabajo",

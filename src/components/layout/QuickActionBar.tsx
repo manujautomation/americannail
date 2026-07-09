@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Phone, MapPin, CalendarDays, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { BUSINESS } from "@/lib/constants";
+import { BUSINESS, FEATURES } from "@/lib/constants";
 
 export default function QuickActionBar() {
   const t = useTranslations("quickAction");
@@ -22,13 +22,15 @@ export default function QuickActionBar() {
       onClick: undefined,
       external: true,
     },
-    {
-      key: "book",
-      icon: <CalendarDays size={18} />,
-      href: undefined,
-      onClick: () => document.querySelector("#booking")?.scrollIntoView({ behavior: "smooth" }),
-      highlight: true,
-    },
+    ...(FEATURES.onlineBooking
+      ? [{
+          key: "book",
+          icon: <CalendarDays size={18} />,
+          href: undefined,
+          onClick: () => document.querySelector("#booking")?.scrollIntoView({ behavior: "smooth" }),
+          highlight: true,
+        } as const]
+      : []),
     {
       key: "message",
       icon: <MessageCircle size={18} />,
