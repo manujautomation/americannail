@@ -33,6 +33,24 @@
     "services": "8+",
     "servicesLabel": "Servicios Premium"
   },
+  "menuBook": {
+    "eyebrow": "Hojea el Menú",
+    "heading": "Nuestro Menú de Servicios",
+    "subheading": "Explora todos nuestros servicios y precios — pasa las páginas como un libro real.",
+    "zoomHint": "Toca una página para ampliarla",
+    "prev": "Página anterior",
+    "next": "Página siguiente",
+    "close": "Cerrar",
+    "pages": {
+      "manicure": "Menú de manicura",
+      "pedicure": "Menú de pedicura",
+      "nailEnhancement": "Menú de uñas esculpidas",
+      "waxing": "Menú de depilación",
+      "addOns": "Servicios adicionales",
+      "signature": "Servicios exclusivos",
+      "thankYou": "Nota de agradecimiento"
+    }
+  },
   "services": {
     "heading": "Nuestros Servicios",
     "subheading": "Tratamientos premium de uñas y spa diseñados para ti",

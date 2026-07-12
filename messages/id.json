@@ -33,6 +33,24 @@
     "services": "8+",
     "servicesLabel": "Layanan Premium"
   },
+  "menuBook": {
+    "eyebrow": "Buka Halamannya",
+    "heading": "Menu Layanan Kami",
+    "subheading": "Lihat semua layanan dan harga — balik halamannya seperti buku sungguhan.",
+    "zoomHint": "Ketuk halaman untuk memperbesar",
+    "prev": "Halaman sebelumnya",
+    "next": "Halaman berikutnya",
+    "close": "Tutup",
+    "pages": {
+      "manicure": "Menu manikur",
+      "pedicure": "Menu pedikur",
+      "nailEnhancement": "Menu penyambungan kuku",
+      "waxing": "Menu waxing",
+      "addOns": "Layanan tambahan",
+      "signature": "Layanan istimewa",
+      "thankYou": "Ucapan terima kasih"
+    }
+  },
   "services": {
     "heading": "Layanan Kami",
     "subheading": "Perawatan kuku dan spa premium yang dirancang untuk Anda",

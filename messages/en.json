@@ -33,6 +33,24 @@
     "services": "8+",
     "servicesLabel": "Premium Services"
   },
+  "menuBook": {
+    "eyebrow": "Flip Through",
+    "heading": "Our Service Menu",
+    "subheading": "Browse our full menu and pricing — turn the pages like a real book.",
+    "zoomHint": "Tap any page to enlarge",
+    "prev": "Previous page",
+    "next": "Next page",
+    "close": "Close",
+    "pages": {
+      "manicure": "Manicure menu",
+      "pedicure": "Pedicure menu",
+      "nailEnhancement": "Nail enhancement menu",
+      "waxing": "Waxing menu",
+      "addOns": "Add-on services menu",
+      "signature": "Signature services menu",
+      "thankYou": "Thank you note"
+    }
+  },
   "services": {
     "heading": "Our Services",
     "subheading": "Premium nail and spa treatments crafted for you",

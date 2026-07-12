@@ -33,6 +33,24 @@
     "services": "8+",
     "servicesLabel": "Dịch vụ cao cấp"
   },
+  "menuBook": {
+    "eyebrow": "Lật trang xem",
+    "heading": "Bảng giá dịch vụ",
+    "subheading": "Xem toàn bộ dịch vụ và bảng giá — lật trang như một cuốn sách thật.",
+    "zoomHint": "Chạm vào trang để phóng to",
+    "prev": "Trang trước",
+    "next": "Trang sau",
+    "close": "Đóng",
+    "pages": {
+      "manicure": "Bảng giá làm móng tay",
+      "pedicure": "Bảng giá làm móng chân",
+      "nailEnhancement": "Bảng giá đắp móng",
+      "waxing": "Bảng giá tẩy lông",
+      "addOns": "Dịch vụ thêm",
+      "signature": "Dịch vụ đặc trưng",
+      "thankYou": "Lời cảm ơn"
+    }
+  },
   "services": {
     "heading": "Dịch vụ của chúng tôi",
     "subheading": "Các liệu trình làm móng và spa cao cấp dành riêng cho bạn",

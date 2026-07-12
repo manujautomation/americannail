@@ -12,7 +12,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 const NAV_LINKS = [
   { key: "home", href: "/" },
-  { key: "services", href: "#services" },
+  { key: "services", href: "#menu" },
   { key: "gallery", href: "#gallery" },
   { key: "reviews", href: "#reviews" },
   { key: "about", href: "#about" },

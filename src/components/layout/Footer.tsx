@@ -16,7 +16,7 @@ import Logo from "@/components/Logo";
 import { BUSINESS, FEATURES, HOURS } from "@/lib/constants";
 
 const NAV_LINKS = [
-  { label: "Services", href: "#services" },
+  { label: "Services", href: "#menu" },
   { label: "Gallery", href: "#gallery" },
   { label: "Reviews", href: "#reviews" },
   { label: "About", href: "#about" },

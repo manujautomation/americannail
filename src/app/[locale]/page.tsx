@@ -6,6 +6,7 @@ import ConciergeWidget from "@/components/concierge/ConciergeWidget";
 import Hero from "@/components/sections/Hero";
 import Stats from "@/components/sections/Stats";
 import Services from "@/components/sections/Services";
+import MenuBook from "@/components/sections/MenuBook";
 import Gallery from "@/components/sections/Gallery";
 import Testimonials from "@/components/sections/Testimonials";
 import Team from "@/components/sections/Team";
@@ -22,6 +23,7 @@ export default function HomePage() {
       <main>
         <Hero />
         <Stats />
+        <MenuBook />
         <Services />
         <Gallery />
         <Testimonials />

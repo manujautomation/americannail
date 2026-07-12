@@ -42,3 +42,6 @@ next-env.d.ts
 
 # local music source files (originals; compressed copy lives in public/audio)
 /music/
+
+# local menu photo originals (web copies live in public/menu)
+/Menu/
