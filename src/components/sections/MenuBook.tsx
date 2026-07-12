@@ -207,7 +207,14 @@ export default function MenuBook() {
                         transformOrigin: "left center",
                         transformStyle: "preserve-3d",
                       }}
-                      animate={{ rotateY: flipped ? -180 : 0, z: flipped ? (i + 1) * 2 : -i * 2 }}
+                      animate={{
+                        rotateY: flipped ? -180 : 0,
+                        // Depth must stay positive so no leaf sinks behind the opaque
+                        // base page. Right stack: earliest leaf on top. Left stack:
+                        // latest-flipped leaf on top.
+                        z: flipped ? (i + 1) * 2 : (LEAVES.length - i) * 2,
+                        zIndex: flipped ? i + 1 : LEAVES.length * 2 - i,
+                      }}
                       transition={FLIP_TRANSITION}
                       onClick={() => setZoomed(flipped ? leaf.back : leaf.front)}
                     >
